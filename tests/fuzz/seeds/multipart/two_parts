@@ -1,0 +1,10 @@
+--XyZ
+Content-Disposition: form-data; name="title"
+
+hello
+--XyZ
+Content-Disposition: form-data; name="photo"; filename="a.jpg"
+Content-Type: image/jpeg
+
+ÿØÿ
+--XyZ--

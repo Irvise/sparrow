@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Todos · Sparrow</title>
+  <link rel="icon" href="/static/check.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="/static/htmx.min.js" defer></script>
+</head>
+<body hx-headers='{"X-Requested-With": "htmx"}'>
+  <h1>todos</h1>
+  <main class="card" hx-target="#todos" hx-swap="outerHTML" hx-include="#filter">
+    <form hx-post="/todos" hx-on::after-request="if (event.detail.successful) this.reset()">
+      <input name="title" placeholder="What needs doing?" maxlength="200" autocomplete="off" required autofocus>
+    </form>
+    {{> list}}
+  </main>
+  {{> footer}}
+  <p class="hint">Server-rendered with Sparrow templates; htmx swaps the pieces. No JavaScript of our own.</p>
+</body>
+</html>

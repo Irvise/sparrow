@@ -1,0 +1,37 @@
+with "config/sparrow_examples_config.gpr";
+with "sparrow_core.gpr";
+with "sparrow_crypto.gpr";
+with "sparrow_io.gpr";
+with "sparrow_json.gpr";
+with "sparrow_jwt.gpr";
+with "sparrow_http.gpr";
+with "sparrow_sqlite.gpr";
+with "sparrow_templates.gpr";
+with "sparrow_open_telemetry.gpr";
+with "sparrow_valkey.gpr";
+with "sparrow_client.gpr";
+with "sparrow_s3.gpr";
+with "sparrow_postgres.gpr";
+
+--  Every example in one project. Build with "alr build", then run each from this folder (they find their files
+--  by paths relative to it): bin/rest_service, bin/static_site, bin/todo_app, bin/blob_game, bin/forum,
+--  bin/file_drop, bin/token_issuer and bin/notes_api.
+project Sparrow_Examples is
+
+   for Source_Dirs use ("rest_service/src", "static_site/src", "todo_app/src", "blob_game/src", "forum/src", "file_drop/src", "notes_api/src", "common/src",
+                         "config/");
+   for Object_Dir use "obj/" & Sparrow_Examples_Config.Build_Profile;
+   for Create_Missing_Dirs use "True";
+   for Exec_Dir use "bin";
+   for Main use ("rest_service.adb", "static_site.adb", "todo_app.adb", "blob_game.adb", "forum.adb",
+                 "file_drop.adb", "notes_api.adb", "token_issuer.adb");
+
+   package Compiler is
+      for Default_Switches ("Ada") use Sparrow_Examples_Config.Ada_Compiler_Switches & ("-gnatWb");
+   end Compiler;
+
+   package Binder is
+      for Switches ("Ada") use ("-Es");
+   end Binder;
+
+end Sparrow_Examples;

@@ -1,0 +1,26 @@
+{{> top}}
+<section class="card">
+  <h1>Threads</h1>
+  <ul class="threads" data-watch="all">
+    {{#threads}}
+      <li>
+        <a class="title" href="/threads/{{id}}">{{title}}</a>
+        <span class="meta">by {{author}} · {{replies}} {{#one_reply}}reply{{/one_reply}}{{^one_reply}}replies{{/one_reply}} · {{active}}</span>
+      </li>
+    {{/threads}}
+    {{^threads}}<li class="empty">No threads yet. Start the first one.</li>{{/threads}}
+  </ul>
+</section>
+{{#logged_in}}
+<section class="card">
+  <h2>Start a thread</h2>
+  <form method="post" action="/threads" class="stack">
+    <input type="hidden" name="csrf_token" value="{{csrf_token}}">
+    <input name="title" placeholder="Title" maxlength="120" required>
+    <textarea name="body" rows="5" placeholder="What do you want to talk about?" maxlength="10000" required></textarea>
+    <button>Post thread</button>
+  </form>
+</section>
+{{/logged_in}}
+{{^logged_in}}<p class="hint"><a href="/login">Log in</a> or <a href="/register">register</a> to post.</p>{{/logged_in}}
+{{> bottom}}

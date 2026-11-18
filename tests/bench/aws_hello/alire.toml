@@ -1,0 +1,8 @@
+name = "aws_hello"
+description = "The AWS counterpart of demo_server's /hello, for tests/bench/run.sh"
+version = "0.1.0-dev"
+licenses = "MIT"
+executables = ["aws_hello"]
+
+[[depends-on]]
+aws = "25.2.0"

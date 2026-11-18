@@ -1,0 +1,10 @@
+POST /u HTTP/1.1
+Host: h
+Content-Type: multipart/form-data; boundary=B
+Content-Length: 72
+
+--B
+Content-Disposition: form-data; name="a"; filename="x.txt"
+
+hi
+--B--

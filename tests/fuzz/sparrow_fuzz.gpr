@@ -1,0 +1,33 @@
+--  Built by run.sh, which supplies the coverage instrumentation through ADAFLAGS and prepares lib/libfuzzer.a.
+with "config/sparrow_fuzz_config.gpr";
+with "sparrow_core.gpr";
+with "sparrow_client.gpr";
+with "sparrow_http.gpr";
+with "sparrow_json.gpr";
+with "sparrow_jwt.gpr";
+with "sparrow_valkey.gpr";
+project Sparrow_Fuzz is
+
+   for Languages use ("Ada", "C");
+   for Source_Dirs use ("src/", "../zlib/", "config/");
+   for Object_Dir use "obj/" & Sparrow_Fuzz_Config.Build_Profile;
+   for Create_Missing_Dirs use "True";
+   for Exec_Dir use "bin";
+   for Main use ("fuzz_http_request.adb", "fuzz_http_response.adb", "fuzz_http_2.adb", "fuzz_multipart.adb",
+                 "fuzz_websocket_frames.adb", "fuzz_json.adb", "fuzz_jwt.adb", "fuzz_valkey_replies.adb",
+                 "fuzz_compression.adb");
+
+   package Compiler is
+      for Default_Switches ("Ada") use Sparrow_Fuzz_Config.Ada_Compiler_Switches & ("-gnata", "-gnatWb");
+      for Default_Switches ("C") use ("-O2");   --  coverage.c itself is not instrumented
+   end Compiler;
+
+   package Binder is
+      for Switches ("Ada") use ("-Es");
+   end Binder;
+
+   package Linker is
+      for Default_Switches ("Ada") use (Project'Project_Dir & "lib/libfuzzer.a", "-lstdc++", "-lpthread", "-lm", "-lz");
+   end Linker;
+
+end Sparrow_Fuzz;

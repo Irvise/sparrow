@@ -1,0 +1,62 @@
+package body Sparrow.Deflate with SPARK_Mode is
+
+   Min_Match   : constant := 3;
+   Max_Match   : constant := 258;
+   --  Effort, chosen for serving: on text, about gzip -6's size at more than gzip -6's speed.
+   Max_Chain   : constant := 8;     --  candidates tried at a position
+   Nice_Length : constant := 64;    --  a match this long is taken without trying further candidates
+   Lazy_Limit  : constant := 16;    --  a match this long is taken without trying the next position
+
+   subtype Code_Length is Natural range 0 .. 15;
+   type Count_Array is array (Natural range <>) of Unsigned_32;
+   type Length_Array is array (Natural range <>) of Code_Length;
+   type Code_Array is array (Natural range <>) of Unsigned_32;
+
+   subtype Litlen_Symbol is Natural range 0 .. 285;
+   subtype Distance_Symbol is Natural range 0 .. 29;
+   subtype Length_Symbol is Natural range 0 .. 28;   --  a match length's symbol, less 257
+   subtype Code_Length_Symbol is Natural range 0 .. 18;
+   End_Of_Block : constant Litlen_Symbol := 256;
+
+   ---------------------------------------------------------------------------------------------------------------
+   --  the tables of RFC 1951 3.2.5
+
+   subtype Match_Length is Natural range Min_Match .. Max_Match;
+   subtype Match_Distance is Natural range 1 .. Window_Size;
+
+   Length_Base  : constant array (Length_Symbol) of Match_Length :=
+     [3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 17, 19, 23, 27, 31, 35, 43, 51, 59, 67, 83, 99, 115, 131, 163, 195, 227,
+      258];
+   Length_Extra : constant array (Length_Symbol) of Natural range 0 .. 5 :=
+     [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 0];
+
+   Distance_Base  : constant array (Distance_Symbol) of Match_Distance :=
+     [1, 2, 3, 4, 5, 7, 9, 13, 17, 25, 33, 49, 65, 97, 129, 193, 257, 385, 513, 769, 1025, 1537, 2049, 3073, 4097,
+      6145, 8193, 12289, 16385, 24577];
+   Distance_Extra : constant array (Distance_Symbol) of Natural range 0 .. 13 :=
+     [0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13];
+
+   --  The order code length code lengths are sent in (3.2.7).
+   Code_Length_Order : constant array (Code_Length_Symbol) of Code_Length_Symbol :=
+     [16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15];
+
+   type Length_Code_Table is array (Match_Length) of Length_Symbol;
+
+   function Make_Length_Codes return Length_Code_Table is
+      Result : Length_Code_Table := [others => 0];
+   begin
+      for Length in Match_Length loop
+         for Symbol in Length_Symbol loop
+            if Length_Base (Symbol) <= Length then
+               Result (Length) := Symbol;
+            end if;
+         end loop;
+      end loop;
+      return Result;
+   end Make_Length_Codes;
+
+   Length_Code : constant Length_Code_Table := Make_Length_Codes;
+
+   --  A distance's symbol: Near (D - 1) for D up to 256, Far ((D - 1) / 128) beyond (every base past 256 is one
+   --  more than a multiple of 128).
+   type Di

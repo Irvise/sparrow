@@ -1,0 +1,375 @@
+V "GNAT Lib v16"
+A -gnatc
+A -gnat2022
+A -mtune=generic
+A -march=x86-64
+P NO
+
+RN
+RV NO_LONG_LONG_INTEGERS
+RV NO_RECURSION
+RV NO_STANDARD_STORAGE_POOLS
+RV NO_DEFAULT_INITIALIZATION
+RV NO_DYNAMIC_SIZED_OBJECTS
+RV NO_IMPLEMENTATION_ASPECT_SPECIFICATIONS
+RV NO_ELABORATION_CODE
+RV NO_OBSOLESCENT_FEATURES
+
+U sparrow.io.sockets%b	sparrow-io-sockets.adb	99dbd42e OO PK
+W interfaces%s		interfac.ads		interfac.ali
+W interfaces.c%s	i-c.adb			i-c.ali
+W sparrow%s		sparrow.ads		sparrow.ali
+W sparrow.io%s		sparrow-io.adb		sparrow-io.ali
+W sparrow.io.addresses%s  sparrow-io-addresses.adb  sparrow-io-addresses.ali
+W sparrow.io.socket_storage%s  sparrow-io-socket_storage.adb  sparrow-io-socket_storage.ali
+W sparrow.io.winsock%s	sparrow-io-winsock.adb	sparrow-io-winsock.ali
+W system%s		system.ads		system.ali
+
+U sparrow.io.sockets%s	sparrow-io-sockets.ads	f7438455 EE OO PK
+W sparrow%s		sparrow.ads		sparrow.ali
+W sparrow.io%s		sparrow-io.adb		sparrow-io.ali
+W sparrow.io.addresses%s  sparrow-io-addresses.adb  sparrow-io-addresses.ali
+W sparrow.times%s	sparrow-times.adb	sparrow-times.ali
+
+D interfac.ads		20260430083320 9111f9c1 interfaces%s
+D i-c.ads		20260430083320 dbdd3be7 interfaces.c%s
+D sparrow.ads		20261117175550 57ca1b66 sparrow%s
+D sparrow-io.ads	20261118174154 42c710f4 sparrow.io%s
+D sparrow-io-addresses.ads  20261117183204 51f0fcea sparrow.io.addresses%s
+D sparrow-io-socket_storage.ads  20261117183222 f3c4a427 sparrow.io.socket_storage%s
+D sparrow-io-sockets.ads  20261118200550 3a3c267a sparrow.io.sockets%s
+D sparrow-io-sockets.adb  20261118200550 f1429e4e sparrow.io.sockets%b
+D sparrow-io-winsock.ads  20261117124632 58ea3f6c sparrow.io.winsock%s
+D sparrow-times.ads	20261117032817 de484e31 sparrow.times%s
+D system.ads		20260430083320 e2b7c99d system%s
+D s-parame.ads		20260430083320 a1aeab5c system.parameters%s
+G a e
+G c Z s b [resolve sparrow__io__sockets 31 14 none]
+G c Z s b [resolve_all sparrow__io__sockets 39 14 none]
+G c Z s b [shares_ports sparrow__io__sockets 49 13 none]
+G c Z s b [open_listener sparrow__io__sockets 54 14 none]
+G c Z s b [accept_client sparrow__io__sockets 67 14 none]
+G c Z s b [accept_client sparrow__io__sockets 73 14 none]
+G c Z s b [connect sparrow__io__sockets 83 14 none]
+G c Z s b [set_timeout sparrow__io__sockets 95 14 none]
+G c Z s b [receive sparrow__io__sockets 103 14 none]
+G c Z s b [send sparrow__io__sockets 109 14 none]
+G c Z s b [send_pair sparrow__io__sockets 115 14 none]
+G r c none [resolve sparrow__io__sockets 31 14 none] [parse_address sparrow__io__addresses 43 14 none]
+G r c none [resolve sparrow__io__sockets 31 14 none] [decode sparrow__io__socket_storage 30 14 none]
+G r c none [resolve_all sparrow__io__sockets 39 14 none] [parse_address sparrow__io__addresses 43 14 none]
+G r c none [resolve_all sparrow__io__sockets 39 14 none] [decode sparrow__io__socket_storage 30 14 none]
+G r c none [open_listener sparrow__io__sockets 54 14 none] [family_code sparrow__io__socket_storage 34 13 none]
+G r c none [open_listener sparrow__io__sockets 54 14 none] [c_socket sparrow__io__winsock 52 13 none]
+G r c none [open_listener sparrow__io__sockets 54 14 none] [encode sparrow__io__socket_storage 25 14 none]
+G r c none [open_listener sparrow__io__sockets 54 14 none] [last_failure sparrow__io__winsock 78 13 none]
+G r c none [open_listener sparrow__io__sockets 54 14 none] [c_setsockopt sparrow__io__winsock 58 13 none]
+G r c none [open_listener sparrow__io__sockets 54 14 none] [set_non_blocking sparrow__io__winsock 82 13 none]
+G r c none [open_listener sparrow__io__sockets 54 14 none] [c_listen sparrow__io__winsock 62 13 none]
+G r c none [open_listener sparrow__io__sockets 54 14 none] [c_bind sparrow__io__winsock 60 13 none]
+G r c none [open_listener sparrow__io__sockets 54 14 none] [c_closesocket sparrow__io__winsock 54 13 none]
+G r c none [open_listener sparrow__io__sockets 54 14 none] [to_descriptor sparrow__io__winsock 16 13 none]
+G r c none [accept_client sparrow__io__sockets 67 14 none] [to_handle sparrow__io__winsock 15 13 none]
+G r c none [accept_client sparrow__io__sockets 67 14 none] [c_accept sparrow__io__winsock 64 13 none]
+G r c none [accept_client sparrow__io__sockets 67 14 none] [last_failure sparrow__io__winsock 78 13 none]
+G r c none [accept_client sparrow__io__sockets 67 14 none] [set_non_blocking sparrow__io__winsock 82 13 none]
+G r c none [accept_client sparrow__io__sockets 67 14 none] [c_closesocket sparrow__io__winsock 54 13 none]
+G r c none [accept_client sparrow__io__sockets 67 14 none] [c_setsockopt sparrow__io__winsock 58 13 none]
+G r c none [accept_client sparrow__io__sockets 67 14 none] [to_descriptor sparrow__io__winsock 16 13 none]
+G r c none [accept_client sparrow__io__sockets 67 14 none] [decode sparrow__io__socket_storage 30 14 none]
+G r c none [accept_client sparrow__io__sockets 67 14 none] [unmapped sparrow__io__addresses 40 13 none]
+G r c none [accept_client sparrow__io__sockets 73 14 none] [to_handle sparrow__io__winsock 15 13 none]
+G r c none [accept_client sparrow__io__sockets 73 14 none] [c_accept sparrow__io__winsock 64 13 none]
+G r c none [accept_client sparrow__io__sockets 73 14 none] [last_failure sparrow__io__winsock 78 13 none]
+G r c none [accept_client sparrow__io__sockets 73 14 none] [set_non_blocking sparrow__io__winsock 82 13 none]
+G r c none [accept_client sparrow__io__sockets 73 14 none] [c_closesocket sparrow__io__winsock 54 13 none]
+G r c none [accept_client sparrow__io__sockets 73 14 none] [c_setsockopt sparrow__io__winsock 58 13 none]
+G r c none [accept_client sparrow__io__sockets 73 14 none] [to_descriptor sparrow__io__winsock 16 13 none]
+G r c none [accept_client sparrow__io__sockets 73 14 none] [decode sparrow__io__socket_storage 30 14 none]
+G r c none [accept_client sparrow__io__sockets 73 14 none] [unmapped sparrow__io__addresses 40 13 none]
+G r c none [connect sparrow__io__sockets 83 14 none] [family_code sparrow__io__socket_storage 34 13 none]
+G r c none [connect sparrow__io__sockets 83 14 none] [c_socket sparrow__io__winsock 52 13 none]
+G r c none [connect sparrow__io__sockets 83 14 none] [encode sparrow__io__socket_storage 25 14 none]
+G r c none [connect sparrow__io__sockets 83 14 none] [last_failure sparrow__io__winsock 78 13 none]
+G r c none [connect sparrow__io__sockets 83 14 none] [c_setsockopt sparrow__io__winsock 58 13 none]
+G r c none [connect sparrow__io__sockets 83 14 none] [c_connect sparrow__io__winsock 66 13 none]
+G r c none [connect sparrow__io__sockets 83 14 none] [c_closesocket sparrow__io__winsock 54 13 none]
+G r c none [connect sparrow__io__sockets 83 14 none] [to_descriptor sparrow__io__winsock 16 13 none]
+G r c none [set_timeout sparrow__io__sockets 95 14 none] [to_handle sparrow__io__winsock 15 13 none]
+G r c none [set_timeout sparrow__io__sockets 95 14 none] [c_setsockopt sparrow__io__winsock 58 13 none]
+G r c none [receive sparrow__io__sockets 103 14 none] [to_handle sparrow__io__winsock 15 13 none]
+G r c none [receive sparrow__io__sockets 103 14 none] [c_recv sparrow__io__winsock 70 13 none]
+G r c none [receive sparrow__io__sockets 103 14 none] [last_failure sparrow__io__winsock 78 13 none]
+G r c none [send sparrow__io__sockets 109 14 none] [to_handle sparrow__io__winsock 15 13 none]
+G r c none [send sparrow__io__sockets 109 14 none] [c_send sparrow__io__winsock 72 13 none]
+G r c none [send sparrow__io__sockets 109 14 none] [last_failure sparrow__io__winsock 78 13 none]
+G r c none [send_pair sparrow__io__sockets 115 14 none] [to_handle sparrow__io__winsock 15 13 none]
+G r c none [send_pair sparrow__io__sockets 115 14 none] [last_failure sparrow__io__winsock 78 13 none]
+X 1 interfac.ads
+47K9*Interfaces 247e15 8|4w6 4r22 5r6 5r24
+81M9*Unsigned_8
+84M9*Unsigned_16 8|67r39 129r26 220r21
+95M9*Unsigned_64
+X 2 i-c.ads
+33K20*C 605e17 8|5w17 5r35
+62I9*int<integer> 8|17r24 18r24 19r24 20r24 29r14 47r43 59r24 68r24 72r55
+. 73r7 75r60 76r25 78r62 182r27 191r35 296r89 303r89 313r26
+73M9*unsigned_long 8|36r16 43r20 44r27 45r20 236r23 236r40 309r11 310r11
+. 312r25
+92M9*size_t 8|21r24
+109E9*char<character>
+124A9*char_array(109E9)<92M9> 8|28r14
+146V13*To_C{124A9} 8|115s25
+X 3 sparrow.ads
+13K9*Sparrow 32e12 7|4r6 5r6 5r25 7r9 120r5 8|6r6 6r32 7r6 8r6 8r30 11r14
+. 321r5
+X 4 sparrow-io.ads
+11K17*IO 3|13k9 4|49e15 7|4r14 7r17 120r13 8|6r14 6r40 7r14 8r14 8r38 11r22
+. 321r13
+12@39*Kernel 7|32r33 40r33 61r33 68r33 75r33 89r33 96r33 104r33 110r33 116r33
+16I9*Descriptor<long_integer> 7|57r24 67r40 67r65 74r18 74r43 86r21 95r36
+. 103r32 109r29 115r34 8|162r24 203r18 203r43 229r40 229r65 245r36 252r21
+. 293r32 300r29 307r34
+17i4*No_Descriptor{16I9} 7|62r34 69r32 76r32 91r32 8|170r19 208r17 259r17
+22n7*None{21E9} 8|92r24
+32n7*Other{21E9} 8|93r25
+34R9*Error 37e14 7|58r24 67r91 74r92 87r21 103r101 109r91 115r105 8|89r27
+. 90r16 163r24 203r92 229r91 253r21 280r99 293r101 300r91 307r105
+35e7*Kind{21E9} 8|92r17 93m17
+39r4*No_Error{34R9} 8|199r19 218r21 277r18 286r21
+41V13*Succeeded{boolean} 7|62s56 69s54 76s54 91s54 106s73 112s73 118s90
+X 5 sparrow-io-addresses.ads
+8K20*Addresses 67e25 7|4w17 10r26 11r30 12r53 13r53 14r67 15r71 17r39 18r39
+. 19r39 20r39 23r15 24r64 25r76 8|6w17 6r43
+10E9*Address_Family 10e49 7|11r40
+10n28*Version_4{10E9} 7|12r63
+10n39*Version_6{10E9} 7|13r63
+12A9*Byte_Array(1|81M9)<integer> 8|126r26
+14R9*IP_Address 58e14 7|10r36
+16r4*Any_IPv4{14R9} 7|17r49
+17r4*Any_IPv6{14R9} 7|18r49
+18r4*Loopback{14R9} 7|19r49
+19r4*Loopback_IPv6{14R9} 7|20r49
+21V13*Family_Of{10E9} 7|25r86
+40V13*Unmapped{14R9} 8|224s36
+43U14*Parse_Address 7|23r25
+47V13*Image{string} 7|24r74
+X 6 sparrow-io-socket_storage.ads
+13K28*Socket_Storage 37e30 8|7w17 54r30 58r24 59r31 67r7 73r12 123r55 128r26
+. 133r16 223r13
+17R9*Layout 20e14 8|54r45
+18m7*Inet6_Family{1|81M9} 8|54m56
+19b7*Length_Byte{boolean} 8|54m82
+23A12*Storage{5|12A9}<integer> 8|58r39 59r46 123r70 128r41
+25U14*Encode 8|67s22
+30U14*Decode 8|133s31 223s28
+34V13*Family_Code{1|81M9} 8|73s27
+X 7 sparrow-io-sockets.ads
+7K20*Sockets 4|11k17 7|120l16 120e23 8|11b25 321l16 321t23
+10R12*IP_Address{5|14R9} 14r32 17r20 18r20 19r20 20r20 22r58 24r30 25r34
+. 31r52 34r54 55r20 74r66 84r17 8|63r31 72r36 130r26 147r52 160r20 203r66
+. 230r14 250r17
+11E12*Address_Family{5|10E9} 12r30 13r30 15r32 25r53
+12V13*Version_4=12:63{5|10E9}
+13V13*Version_6=13:63{5|10E9}
+14V14*"="=14:77{boolean} 8|135r106 173r21 180r18
+14r18 Left{5|14R9}
+14r24 Right{5|14R9}
+15V14*"="=15:81{boolean}
+15e18 Left{5|10E9}
+15e24 Right{5|10E9}
+17r4*Any_IPv4=17:49{5|14R9} 8|174r28 209r17 224r57
+18r4*Any_IPv6=18:49{5|14R9} 8|173r23 180r20
+19r4*Loopback=19:49{5|14R9} 8|105r31
+20r4*Loopback_IPv6=20:49{5|14R9}
+22U14*Parse_Address=23:25 8|107s7
+22a29 Text{string}
+22r44 Address{10R12}
+22b70 Valid{boolean}
+24V13*Image=24:74{string}
+24r20 Address{10R12}
+25V13*Family_Of=25:86{5|10E9}
+25r24 Address{10R12}
+27I9*Port_Number<integer> 56r20 85r17 8|63r50 161r20 251r17
+31U14*Resolve 31>23 31<38 31<64 8|147b14 154l8 154t15
+31a23 Host{string} 32r49 8|147b23 151r20
+31r38 Address{10R12} 8|147b38 152m7
+31b64 Found{boolean} 8|147b64 153m7
+34A9*Address_List(10R12)<integer> 39r58 8|98r58 148r15
+39U14*Resolve_All 39>27 39<42 39<72 8|98b14 145l8 145t19 151s7
+39a27 Host{string} 41r22 8|98b27 107r22 111r13 111r57 115r31
+39a42 Addresses{34A9} 41r55 42r31 8|98b42 105m7 107m28 107r28 107r39 121r48
+. 135r66 135r77 138m19 138r30
+39i72 Count{natural} 42r22 8|98b72 106m7 109m10 121r40 135r57 137m19 137r62
+. 138r52
+49V13*Shares_Ports{boolean} 8|157b13
+54U14*Open_Listener 55>7 56>7 57<7 58<7 59>7 60>7 8|159b14 174s13 200l8 200t21
+55r7 Address{10R12} 8|160b7 167r65 168r47 173r13 180r10
+56i7 Port{27I9} 8|161b7 168r56 174r38
+57i7 Listener{4|16I9} 62r23 8|162b7 170m7 174m44 198m7
+58r7 Failure{4|34R9} 62r67 8|163b7 172m10 174m54 193m10 199m7
+59b7 Share_Port{boolean} 8|164b7 174r63
+60i7 Backlog{positive} 8|165b7 174r75 191r53
+67U14*Accept_Client 67>29 67<52 67<77 8|229b14 233l8 233t21
+67i29 Listener{4|16I9} 8|229b29 232r22
+67i52 Socket{4|16I9} 69r23 8|229b52 232m32
+67r77 Failure{4|34R9} 69r65 8|229b77 232m46
+73U14*Accept_Client 74>7 74<30 74<55 74<78 8|202b14 227l8 227t21 232s7
+74i7 Listener{4|16I9} 8|203b7 206r65
+74i30 Socket{4|16I9} 76r23 8|203b30 208m7 217m10
+74r55 Peer{10R12} 8|203b55 209m7 223m65 224m13 224r46
+74r78 Failure{4|34R9} 76r65 8|203b78 211m10 213m10 218m10
+83U14*Connect 84>7 85>7 86<7 87<7 88>7 8|249b14 278l8 278t15
+84r7 Address{10R12} 8|250b7 256r65 257r47
+85i7 Port{27I9} 8|251b7 257r56
+86i7 Socket{4|16I9} 91r23 8|252b7 259m7 276m7
+87r7 Failure{4|34R9} 91r65 8|253b7 261m10 270m10 277m7
+88i7 Timeout{10|10I9} 90r22 8|254b7 265r10 266r31
+95U14*Set_Timeout 95>27 95>48 8|245b14 247l8 247t19
+95i27 Socket{4|16I9} 8|245b27 246r31
+95i48 Timeout{10|10I9} 96r49 8|245b48 246r40
+103U14*Receive 103>23 103=44 103<66 103<87 8|293b14 298l8 298t15
+103i23 Socket{4|16I9} 8|293b23 296r53
+103a44 Into{string} 105r22 106r37 8|293b44 294r49 296m62 296r62 296r68
+103i66 Count{integer} 106r22 106r59 8|293b66 297m23
+103r87 Failure{4|34R9} 106r84 8|293b87 297m30
+109U14*Send 109>20 109>41 109<56 109<77 8|300b14 305l8 305t12
+109i20 Socket{4|16I9} 8|300b20 303r53
+109a41 From{string} 111r22 112r37 8|300b41 301r49 303r62 303r68
+109i56 Count{integer} 112r22 112r59 8|300b56 304m23
+109r77 Failure{4|34R9} 112r84 8|300b77 304m30
+115U14*Send_Pair 115>25 115>46 115>52 115<70 115<91 8|307b14 319l8 319t17
+115i25 Socket{4|16I9} 8|307b25 314r31
+115a46 Head{string} 117r22 117r80 118r37 8|307b46 309r39 309r65 309r71 317r81
+115a52 Content{string} 117r47 118r51 8|307b52 310r39 311r15 311r64 311r73
+. 314r61 317r95
+115i70 Count{integer} 118r22 118r76 8|307b70 318m15
+115r91 Failure{4|34R9} 118r101 8|307b91 318m22
+X 8 sparrow-io-sockets.adb
+14R9 Address_Info 15r43 16c9 25e15 100r27
+15P9 Address_Info_Access(14R9) 24r24 28r92 31r39 101r27 102r19
+16R9 Address_Info
+17i7*Flags{2|62I9}
+18i7*Family{2|62I9} 100m44
+19i7*Socket_Type{2|62I9} 100m65
+20i7*Protocol{2|62I9}
+21m7*Address_Length{2|92M9} 123r31 126r62
+22m7*Canonical_Name{11|67M9}
+23m7*Address{11|67M9} 122r23 127r53
+24p7*Next{15P9} 142r33
+27V13 C_Getaddrinfo{2|62I9} 28>7 28>26 28>52 28^76 115s10
+28a7 Node{2|124A9}
+28m26 Service{11|67M9}
+28m52 Hints{11|67M9}
+28p76 Result(15P9)
+31U14 C_Freeaddrinfo 31>30 144s7
+31p30 Result{15P9}
+35R9 Send_Buffer 38e15 308r43
+36m7*Length{2|73M9}
+37m7*Base{11|67M9}
+40V13 C_WSASend{2|62I9} 41>7 42>7 43>7 44^7 45>7 46>7 47>7 314s9
+41m7 Socket{9|11M9}
+42m7 Buffers{11|67M9}
+43m7 Count{2|73M9}
+44p7 Sent(2|73M9)
+45m7 Flags{2|73M9}
+46m7 Overlapped{11|67M9}
+47m7 Completion{11|67M9}
+50N4 AF_UNSPEC 100r54
+51N4 AF_INET6 54r72
+52N4 IPPROTO_IPV6 184r38
+53N4 IPV6_V6ONLY 184r52
+54r4 Storage_Layout{6|17R9} 67r59 73r49 133r46 223r49
+57R9 Raw_Address 60e14 61r8 63r70 64r16 168r24 205r26 257r24
+58a7*Bytes{6|23A12} 67m82 190m39 206m82 223r42 269m35
+59i7*Length{2|62I9} 68m14 190r60 206m103 269r56
+63V13 To_Raw{57R9} 63b13 63>21 63>43 70l8 70t14 168s39 257s39
+63r21 Address{7|10R12} 67r30
+63i43 Port{7|27I9} 67r52
+64r7 Result{57R9} 67m75 67r75 68m7 69r14
+65i7 Length{positive} 67m89 68r29
+72V13 Family_Code{2|62I9} 72b13 72>26 167s52 256s52
+72r26 Address{7|10R12} 73r40
+75U14 Enable 75b14 75>22 75>46 75>53 81l8 81t14 179s7 216s10 275s7
+75m22 Socket{9|11M9} 78r24
+75i46 Level{2|62I9} 78r32
+75i53 Name{2|62I9} 78r39
+76i7 Enabled{2|62I9} 78m45 78r45
+83U14 Close_Quietly 83b14 83>29 87l8 87t21 194s10 214s10 271s10
+83m29 Socket{9|11M9} 84r25
+89V13 Failed{4|34R9} 89b13 96l8 96t14 172s21 193s21 211s21 213s21 261s21
+. 270s21 283s21
+90r7 Result{4|34R9} 92r10 93m10 95r14
+100r7 Hints{16R9} 115m59 115r59
+101p7 Result{15P9} 115m74 115r74 115r102 120r20 144r23
+102p7 Entry_Now{15P9} 120m7 121r13 122r13 123r21 126r52 127r43 142m10 142r23
+103b7 Found{boolean} 107m57 108r10 133m77 135r19
+111e47 Symbol{character} 111r65
+126a16 Given{5|12A9} 132r23 132r39
+128a16 Where{6|23A12} 132m16 133r39
+129m16 Port{1|84M9} 133m71
+130r16 Decoded{7|10R12} 133m62 135r109 138r62
+135i43 Index{integer} 135r99
+148a7 First{7|34A9} 151m26 152r18
+149i7 Count{natural} 151m33 153r18
+167m7 Socket{9|11M9} 171r10 179r15 184r30 189r32 190r25 191r27 194r25 198r34
+168r7 Where{57R9} 190m33 190r33 190r54
+182i13 Off{2|62I9} 184m65 184r65 184r78
+205r7 Where{57R9} 206m76 206r76 206m97 206r97 223r36
+206m7 Accepted{9|11M9} 210r10 212r35 214r25 216r18 217r36
+220m13 Port{1|84M9} 223m71
+221b13 Known{boolean} 223m77 224r25
+230r7 Peer{7|10R12} 232m40
+235U14 Bound_Waits 235b14 235>27 235>51 243l8 243t19 246s7 266s10
+235m27 Socket{9|11M9} 238r24 239r31
+235i51 Timeout{10|10I9} 236r55
+236m7 Bound{2|73M9} 238m57 238r57 238r72 239m64 239r64 239r79
+256m7 Opened{9|11M9} 260r10 266r23 269r21 271r25 275r15 276r33
+257r7 Where{57R9} 269m29 269r29 269r50
+280U14 Report 280b14 280>22 280>47 280<64 280<85 288l8 288t14 296s7 303s7
+. 317s7
+280i22 Got{long_long_integer} 281r10 281r26 285r30
+280i47 Limit{natural} 281r51
+280i64 Count{integer} 282m10 285m10
+280r85 Failure{4|34R9} 283m10 286m10
+291N4 Max_Chunk 294r62 301r62 309r52 310r55
+294i7 Length{natural} 296r94 297r15
+301i7 Length{natural} 303r94 304r15
+308a7 Buffers(35R9) 314m40 314r40
+312m7 Sent{2|73M9} 314m96 314r96 317r73
+313i7 Result{2|62I9} 317r19
+X 9 sparrow-io-winsock.ads
+9K28*Winsock 8|8w17 8r41 9|88e23
+11M9*Socket_Handle<1|95M9> 8|41r20 75r31 83r38 167r25 206r27 235r36 256r25
+12m4*Invalid_Socket{11M9} 8|171r19 210r21 260r19
+13N4*Socket_Error 8|317r28
+15V13*To_Handle{11M9} 8|206s54 246s20 296s42 303s42 314s20
+16V13*To_Descriptor{4|16I9} 8|198s19 217s21 276s18
+21N4*SOCK_STREAM 8|100r80 167r75 256r75
+22N4*IPPROTO_TCP 8|216r28 275r23
+23N4*TCP_NODELAY 8|216r41 275r36
+24N4*SOL_SOCKET 8|179r23 238r32 239r39
+25N4*SO_SNDTIMEO 8|239r51
+26N4*SO_RCVTIMEO 8|238r44
+27N4*SO_EXCLUSIVEADDRUSE 8|179r35
+52V13*C_Socket{11M9} 8|167s42 256s42
+54V13*C_Closesocket{2|62I9} 8|84s10
+58V13*C_Setsockopt{2|62I9} 8|78s10 184s16 238s10 239s17
+60V13*C_Bind{2|62I9} 8|190s17
+62V13*C_Listen{2|62I9} 8|191s17
+64V13*C_Accept{11M9} 8|206s44
+66V13*C_Connect{2|62I9} 8|269s10
+70V13*C_Recv{2|62I9} 8|296s34
+72V13*C_Send{2|62I9} 8|303s34
+78V13*Last_Failure{4|34R9} 8|90s25
+82V13*Set_Non_Blocking{boolean} 8|189s14 212s17
+X 10 sparrow-times.ads
+3K17*Times 7|5w14 5r33 10|29e18
+10I9*Milliseconds<long_long_integer> 7|88r17 95r58 8|235r61 245r58 254r17
+X 11 system.ads
+37K9*System 8|9w6 22r24 22r42 23r24 23r42 28r36 28r60 37r16 42r20 46r20 47r20
+. 99r16 115r38 122r34 311r39 315r20 315r41 11|155e11
+67M9*Address 8|22r31 23r31 28r43 28r67 37r23 42r27 46r27 47r27 99r23
+69m4*Null_Address{67M9} 8|22r49 23r49 115r45 122r41 311r46 315r27 315r48
+81V14*"="{boolean} 8|122r31
+

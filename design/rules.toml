@@ -1,0 +1,90 @@
+# The architecture of the Sparrow crates as data. design/check.py reads this file and fails when the tree
+# disagrees with it. Change a rule here only together with the decision record that justifies it
+# (design/decisions/), in the same change.
+
+# --- Decision 0012: the crate split -----------------------------------------------------------------------
+# The Sparrow crates each crate depends on, exactly: in alire.toml, in the project file's "with" lines, and in
+# the units its sources "with". A dependency added or dropped without changing this list fails.
+[crates]
+sparrow_core           = []
+sparrow_json           = ["sparrow_core"]
+sparrow_sqlite         = ["sparrow_core"]
+sparrow_postgres       = ["sparrow_core"]
+sparrow_client         = ["sparrow_core", "sparrow_io", "sparrow_crypto"]
+sparrow_templates      = ["sparrow_core", "sparrow_json"]
+sparrow_io             = ["sparrow_core"]
+sparrow_crypto         = ["sparrow_core"]
+sparrow_jwt            = ["sparrow_core", "sparrow_crypto", "sparrow_json"]
+sparrow_s3             = ["sparrow_core", "sparrow_crypto", "sparrow_client"]
+sparrow_valkey         = ["sparrow_core", "sparrow_io", "sparrow_crypto"]
+sparrow_http           = ["sparrow_core", "sparrow_io", "sparrow_crypto", "sparrow_json"]
+sparrow_open_telemetry = ["sparrow_core", "sparrow_io", "sparrow_json", "sparrow_http", "sparrow_client"]
+
+# --- Decisions 0013 and 0002: native protocols, C only where it is maintained elsewhere ----------------------
+# The only crates whose sources may bind C (Convention => C, pragma Import, Interfaces.C) and the libraries
+# each may link. Every other crate is Ada only.
+[c_linkage]
+sparrow_crypto   = ["ssl", "crypto"]
+sparrow_io       = ["ws2_32"]          # the system's socket API on Windows; POSIX calls need no library
+sparrow_postgres = ["pq"]
+sparrow_sqlite   = ["sqlite3"]
+
+# Libraries no Sparrow crate may link: protocols and compression codecs are written in Ada (0013), and
+# cryptography comes only through sparrow_crypto (0002). zlib is allowed in tests/, as a reference decoder.
+[forbidden_libraries]
+names = ["z", "curl", "nghttp2", "nghttp3", "brotli", "brotlienc", "zstd", "hiredis", "ssl", "crypto"]
+except = { sparrow_crypto = ["ssl", "crypto"] }
+
+# --- Decision 0004: what reads a client's bytes is proved -------------------------------------------------
+# Units that must be SPARK in spec and body (no SPARK_Mode => Off on the package). tests/prove.sh proves them;
+# check.py makes sure they stay in SPARK and that every crate holding SPARK code is in prove.sh.
+[proved]
+units = [
+  "Sparrow.Buffers", "Sparrow.Encoding", "Sparrow.Times", "Sparrow.Base64", "Sparrow.Deflate", "Sparrow.Gzip",
+  "Sparrow.Chunked",
+  "Sparrow.IO.Addresses",
+  "Sparrow.Json", "Sparrow.Json.Writers",
+  "Sparrow.Jwt",
+  "Sparrow.Http.Parser", "Sparrow.Http.Http_2", "Sparrow.Http.Hpack", "Sparrow.Http.Frames",
+  "Sparrow.Http.Requests", "Sparrow.Http.Responses", "Sparrow.Http.Route_Patterns",
+  "Sparrow.Http.Multipart_Scanning", "Sparrow.Http.Session_Envelope", "Sparrow.Http.Ranges",
+  "Sparrow.Postgres_Wire",
+  "Sparrow.Valkey_Protocol",
+  "Sparrow.Client_Wire",
+]
+prove_script = "tests/prove.sh"
+
+# --- Decision 0005: bytes and text are different types ----------------------------------------------------
+# A bare UTF8_String (...) conversion in library code needs its reason on the same line or the line above
+# (a comment naming the check or the source that makes the bytes valid). Existing unexplained ones are
+# counted per file below; a file may not gain more, and a count that falls must be lowered here.
+[text_conversions]
+justification = "UTF-8:"     # the comment must contain this marker, e.g.  --  UTF-8: checked by Valid_Utf8 above
+
+# Conversions that predate the rule, per file (recorded 2026-11-18). Each still needs its reason checked and
+# written; the counts may only fall.
+[text_conversions.known_unexplained]
+"sparrow_core/src/sparrow-encoding.adb" = 3
+"sparrow_http/src/sparrow-http-event_streams.adb" = 1
+"sparrow_http/src/sparrow-http-multipart.adb" = 1
+"sparrow_http/src/sparrow-http-responses.adb" = 1
+"sparrow_http/src/sparrow-http-sessions.adb" = 2
+"sparrow_json/src/sparrow-json.adb" = 6
+"sparrow_jwt/src/sparrow-jwt-key_sets.adb" = 3
+"sparrow_open_telemetry/src/sparrow-open_telemetry.adb" = 10
+"sparrow_postgres/src/sparrow-postgres-queries.adb" = 4
+"sparrow_postgres/src/sparrow-postgres.adb" = 1
+"sparrow_templates/src/sparrow-templates-bindings-add_rows.adb" = 1
+"sparrow_templates/src/sparrow-templates.adb" = 5
+
+# --- Decision 0007: portable specs ------------------------------------------------------------------------
+# The specs at the top of sparrow_io/src name no system call: platform code lives in its subdirectories.
+[portable_specs]
+directory = "sparrow_io/src"
+forbidden = ["Interfaces.C", "pragma Import", "Convention => C", "External_Name"]
+
+# --- Decision 0014: toolchain ----------------------------------------------------------------------------
+[toolchain]
+gnat = ">=13"
+ada_version = "ada2022"
+line_length = "-gnatyM120"

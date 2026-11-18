@@ -1,0 +1,5 @@
+<li class="todo{{#done}} done{{/done}}">
+  <input type="checkbox" aria-label="Done" {{#done}}checked{{/done}} hx-patch="/todos/{{id}}/toggle">
+  <span class="title">{{title}}</span>
+  <button class="remove" aria-label="Delete" hx-delete="/todos/{{id}}">×</button>
+</li>

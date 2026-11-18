@@ -1,0 +1,30 @@
+name = "sparrow_fuzz"
+description = "Coverage-guided fuzzing of the Sparrow parsers (libFuzzer)"
+version = "0.1.0-dev"
+
+authors = ["Michael Hardeman"]
+maintainers = ["Michael Hardeman <michael.hardeman@protonmail.com>"]
+maintainers-logins = ["michael-hardeman"]
+licenses = "MIT"
+
+[build-switches]
+"*".ada_version = "ada2022"
+"*".style_checks = ["-gnatyM120"]
+
+[[depends-on]]
+sparrow_core = "~0.1.0-dev"
+sparrow_client = "~0.1.0-dev"
+sparrow_http = "~0.1.0-dev"
+sparrow_json = "~0.1.0-dev"
+sparrow_jwt = "~0.1.0-dev"
+sparrow_valkey = "~0.1.0-dev"
+
+[[pins]]
+sparrow_core = { path = "../../sparrow_core" }
+sparrow_client = { path = "../../sparrow_client" }
+sparrow_crypto = { path = "../../sparrow_crypto" }
+sparrow_http = { path = "../../sparrow_http" }
+sparrow_io = { path = "../../sparrow_io" }
+sparrow_json = { path = "../../sparrow_json" }
+sparrow_jwt = { path = "../../sparrow_jwt" }
+sparrow_valkey = { path = "../../sparrow_valkey" }

@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{#title}}{{title}} · {{/title}}Sparrow forum</title>
+  <link rel="icon" href="/static/bubble.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="/static/live.js" defer></script>
+</head>
+<body>
+  <header>
+    <a class="brand" href="/"><img src="/static/bubble.svg" alt="" width="28" height="28"> Sparrow forum</a>
+    <nav>
+      {{#logged_in}}
+        <span class="who">{{user_name}}</span>
+        <form method="post" action="/logout">
+          <input type="hidden" name="csrf_token" value="{{csrf_token}}">
+          <button>Log out</button>
+        </form>
+      {{/logged_in}}
+      {{^logged_in}}
+        <a href="/login">Log in</a>
+        <a class="button" href="/register">Register</a>
+      {{/logged_in}}
+    </nav>
+  </header>
+  {{#flash}}<p class="flash" role="status">{{flash}}</p>{{/flash}}
+  <p id="live" class="live" hidden><a href="">New posts — show them</a></p>
+  <main>

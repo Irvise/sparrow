@@ -1,0 +1,5 @@
+# ThreadSanitizer suppressions for tests/race.sh.
+# OpenSSL is not instrumented: TSan cannot see its internal lock-free synchronisation (lazy initialisation of the
+# random generator and of algorithm tables), and reports races between its own threads' first uses of it.
+race:libcrypto.so
+race:libssl.so

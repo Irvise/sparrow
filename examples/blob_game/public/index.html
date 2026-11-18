@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <title>Gobble</title>
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <canvas id="arena"></canvas>
+
+  <aside id="board" class="panel" hidden>
+    <h2>Heaviest</h2>
+    <ol id="top"></ol>
+  </aside>
+  <div id="mass" class="panel" hidden></div>
+
+  <form id="start" class="overlay">
+    <h1>Gobble</h1>
+    <p id="message">Eat the dots. Eat smaller blobs. Don't get eaten.</p>
+    <input id="name" name="name" maxlength="16" placeholder="Your name" autocomplete="off" required autofocus>
+    <button>Play</button>
+    <p class="small">Steer with the mouse or a finger. Blobs 25% heavier than you can eat you.</p>
+  </form>
+
+  <script src="/game.js"></script>
+</body>
+</html>

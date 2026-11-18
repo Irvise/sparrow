@@ -1,0 +1,52 @@
+with "sparrow_core.gpr";
+with "config/sparrow_io_config.gpr";
+project Sparrow_Io is
+
+   for Library_Name use "Sparrow_Io";
+   for Library_Version use Project'Library_Name & ".so." & Sparrow_Io_Config.Crate_Version;
+
+   --  One body per platform for each spec in src/.
+   type Host_OS is ("linux", "macos", "windows", "freebsd", "openbsd", "unknown");
+   Host : Host_OS := Sparrow_Io_Config.Alire_Host_OS;
+
+   Platform := "";
+   case Host is
+      when "linux"   => Platform := "linux";
+      when "windows" => Platform := "windows";
+      when others    => Platform := "bsd";      --  macos, freebsd, openbsd
+   end case;
+
+   --  POSIX systems share src/posix; src/linux and src/bsd hold what differs (constants, epoll or kqueue).
+   case Host is
+      when "windows" => for Source_Dirs use ("src/", "src/windows", "config/");
+      when others    => for Source_Dirs use ("src/", "src/posix", "src/" & Platform, "config/");
+   end case;
+   for Object_Dir use "obj/" & Sparrow_Io_Config.Build_Profile;
+   for Create_Missing_Dirs use "True";
+   for Library_Dir use "lib";
+
+   type Library_Type_Type is ("relocatable", "static", "static-pic");
+   Library_Type : Library_Type_Type :=
+     external ("SPARROW_IO_LIBRARY_TYPE", external ("LIBRARY_TYPE", "static"));
+   for Library_Kind use Library_Type;
+
+   package Compiler is
+      for Default_Switches ("Ada") use Sparrow_Io_Config.Ada_Compiler_Switches;
+   end Compiler;
+
+   package Binder is
+      for Switches ("Ada") use ("-Es"); --  Symbolic traceback
+   end Binder;
+
+   package Linker is
+      case Host is
+         when "windows" => for Linker_Options use ("-lws2_32");
+         when others    => null;
+      end case;
+   end Linker;
+
+   package Install is
+      for Artifacts (".") use ("share");
+   end Install;
+
+end Sparrow_Io;

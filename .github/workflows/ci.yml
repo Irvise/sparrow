@@ -1,0 +1,171 @@
+#  Builds every crate, the tests and the examples, and runs the test suite, on Linux, macOS and Windows with
+#  GNAT 13 to 16. Separate jobs prove the SPARK code, fuzz the parsers (a minute per target on each push,
+#  half an hour each night), and run the server's tests under ThreadSanitizer.
+#
+#  Linux runs Ubuntu 24.04, whose OpenSSL is 3.0 (no Argon2id: passwords take the scrypt path); macOS
+#  (Homebrew) and Windows (MSYS2) have 3.2 or later (Argon2id).
+#  PostgreSQL, Valkey and S3 tests run on Linux only (they need a container); elsewhere they report themselves
+#  skipped.
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 3 * * *"   #  nightly: the long fuzzing run
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: ${{ matrix.os }}, GNAT ${{ matrix.gnat }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-latest, windows-latest]
+        gnat: [13, 14, 15, 16]
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: alire-project/setup-alire@v4
+        with:
+          version: 2.1.0
+          toolchain: gprbuild gnat_native^${{ matrix.gnat }}
+
+      - name: System libraries (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libssl-dev libpq-dev libsqlite3-dev
+
+      - name: System libraries (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install openssl@3 libpq
+          # Both are keg-only: tell the linker, and use OpenSSL's own command line for the test certificate.
+          echo "LIBRARY_PATH=$(brew --prefix openssl@3)/lib:$(brew --prefix libpq)/lib" >> "$GITHUB_ENV"
+          echo "$(brew --prefix openssl@3)/bin" >> "$GITHUB_PATH"
+
+      - name: System libraries (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          msys="$LOCALAPPDATA/alire/cache/msys64"
+          "$msys/usr/bin/pacman" -S --noconfirm --needed mingw-w64-x86_64-openssl mingw-w64-x86_64-postgresql \
+            mingw-w64-x86_64-sqlite3
+          # The test programs load these DLLs at run time.
+          cygpath -u "$msys/mingw64/bin" >> "$GITHUB_PATH"
+
+      - name: PostgreSQL test server
+        if: runner.os == 'Linux'
+        run: tests/postgres_server.sh
+
+      - name: Valkey test server
+        if: runner.os == 'Linux'
+        run: tests/valkey_server.sh
+
+      - name: S3 test server
+        if: runner.os == 'Linux'
+        run: tests/s3_server.sh
+
+      - name: Tests
+        run: tests/run.sh
+
+      - name: Examples
+        working-directory: examples
+        run: alr -n build
+
+      - name: Snippets and guides
+        run: examples/snippets/generate.sh --check   # every snippet compiles; SNIPPETS.md, GETTING_STARTED.md current
+
+  design:
+    name: Design rules
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 design/check.py   # design/rules.toml; see design/README.md
+
+  prove:
+    name: SPARK proof
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: alire-project/setup-alire@v4
+        with:
+          version: 2.1.0
+          toolchain: gprbuild gnat_native
+
+      - name: System libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libssl-dev libpq-dev libsqlite3-dev
+
+      - name: gnatprove
+        run: |
+          alr -n install gnatprove
+          echo "$HOME/.alire/bin" >> "$GITHUB_PATH"
+
+      - name: Prove
+        run: tests/prove.sh
+
+  races:
+    name: ThreadSanitizer
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: alire-project/setup-alire@v4
+        with:
+          version: 2.1.0
+          toolchain: gprbuild gnat_native
+
+      - name: System libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libssl-dev libpq-dev libsqlite3-dev libtsan2
+
+      - name: Races
+        run: tests/race.sh
+
+  fuzz:
+    name: Fuzzing
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: alire-project/setup-alire@v4
+        with:
+          version: 2.1.0
+          toolchain: gprbuild gnat_native
+
+      - name: System libraries and libFuzzer
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libssl-dev clang-18 libclang-rt-18-dev
+          sudo ln -sf /usr/bin/clang-18 /usr/local/bin/clang
+
+      - name: Fuzz
+        run: tests/fuzz/run.sh ${{ github.event_name == 'schedule' && 1800 || 60 }}
+
+      - name: Failing inputs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fuzz-failures
+          path: |
+            tests/fuzz/crash-*
+            tests/fuzz/corpus/*.log

@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sparrow static site</title>
+  <link rel="icon" href="/sparrow.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header>
+    <img src="/sparrow.svg" alt="" width="56" height="56">
+    <h1>Served by Sparrow</h1>
+  </header>
+  <main>
+    <p>Every file in this folder is served at its path, with its media type, an <code>ETag</code> and
+      <code>Last-Modified</code>. Reload the page with the network tab open: unchanged files come back as
+      <strong>304 Not Modified</strong>.</p>
+    <p>The whole server is one route:</p>
+    <pre><code>package Site_Files is new Sparrow.Http.Static.Folder (Root =&gt; "public");
+
+Routers.Add (Routes, Get, "/*file", Site_Files.Handle'Access);</code></pre>
+    <p>See also <a href="/about/">a folder with its own index</a>, and try <a href="/../secret">escaping the
+      folder</a> or <a href="/.hidden">a hidden file</a>: both are 404.</p>
+    <p id="clock" class="note"></p>
+  </main>
+  <script src="/clock.js"></script>
+</body>
+</html>

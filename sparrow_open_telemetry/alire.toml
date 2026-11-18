@@ -1,0 +1,40 @@
+name = "sparrow_open_telemetry"
+description = "Sparrow web stack: trace export to OpenTelemetry collectors"
+version = "0.1.0-dev"
+
+authors = ["Michael Hardeman"]
+maintainers = ["Michael Hardeman <michael.hardeman@protonmail.com>"]
+maintainers-logins = ["michael-hardeman"]
+licenses = "MIT"
+website = "https://github.com/michael-hardeman/sparrow"
+tags = ["opentelemetry", "otlp", "tracing", "http"]
+
+[available.'case(os)']
+linux = true
+macos = true
+windows = true
+freebsd = true
+"..." = false
+
+[build-switches]
+"*".ada_version = "ada2022"
+"*".style_checks = ["-gnatyM120"]
+
+[[depends-on]]
+sparrow_core = "~0.1.0-dev"
+sparrow_io = "~0.1.0-dev"
+sparrow_json = "~0.1.0-dev"
+sparrow_http = "~0.1.0-dev"
+sparrow_client = "~0.1.0-dev"
+
+# Until the crates are published, siblings are taken from this repository.
+[[pins]]
+sparrow_core = { path = "../sparrow_core" }
+sparrow_io = { path = "../sparrow_io" }
+sparrow_crypto = { path = "../sparrow_crypto" }
+sparrow_json = { path = "../sparrow_json" }
+sparrow_http = { path = "../sparrow_http" }
+sparrow_client = { path = "../sparrow_client" }
+
+[[depends-on]]
+gnat = ">=13"   # tested in CI with GNAT 13 to 16

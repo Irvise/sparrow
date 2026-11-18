@@ -1,0 +1,4 @@
+<ul id="todos">
+  {{#todos}}{{> item}}{{/todos}}
+  {{^todos}}<li class="empty">{{#filter_done}}Nothing finished yet.{{/filter_done}}{{^filter_done}}Nothing to do.{{/filter_done}}</li>{{/todos}}
+</ul>

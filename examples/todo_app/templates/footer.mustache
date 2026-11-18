@@ -1,0 +1,10 @@
+<footer id="footer" class="bar"{{#oob}} hx-swap-oob="true"{{/oob}}>
+  <input type="hidden" id="filter" name="filter" value="{{filter}}">
+  <span>{{left}} left</span>
+  <nav hx-target="#todos" hx-swap="outerHTML">
+    <a href="/?filter=all" class="{{#filter_all}}on{{/filter_all}}" hx-get="/todos?filter=all" hx-push-url="/?filter=all">All</a>
+    <a href="/?filter=active" class="{{#filter_active}}on{{/filter_active}}" hx-get="/todos?filter=active" hx-push-url="/?filter=active">Active</a>
+    <a href="/?filter=done" class="{{#filter_done}}on{{/filter_done}}" hx-get="/todos?filter=done" hx-push-url="/?filter=done">Done</a>
+  </nav>
+  <button hx-post="/todos/clear" hx-target="#todos" hx-swap="outerHTML" hx-include="#filter" {{^finished}}disabled{{/finished}}>Clear done</button>
+</footer>

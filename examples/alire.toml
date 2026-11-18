@@ -1,0 +1,43 @@
+name = "sparrow_examples"
+description = "Example programs for the Sparrow web stack"
+version = "0.1.0-dev"
+
+authors = ["Michael Hardeman"]
+maintainers = ["Michael Hardeman <michael.hardeman@protonmail.com>"]
+maintainers-logins = ["michael-hardeman"]
+licenses = "MIT"
+executables = ["rest_service", "static_site", "todo_app", "blob_game", "forum", "file_drop", "token_issuer", "notes_api"]
+
+[build-switches]
+"*".ada_version = "ada2022"
+"*".style_checks = ["-gnatyM120"]
+
+[[depends-on]]
+sparrow_core = "~0.1.0-dev"
+sparrow_crypto = "~0.1.0-dev"
+sparrow_io = "~0.1.0-dev"
+sparrow_json = "~0.1.0-dev"
+sparrow_jwt = "~0.1.0-dev"
+sparrow_http = "~0.1.0-dev"
+sparrow_sqlite = "~0.1.0-dev"
+sparrow_templates = "~0.1.0-dev"
+sparrow_open_telemetry = "~0.1.0-dev"
+sparrow_valkey = "~0.1.0-dev"
+sparrow_client = "~0.1.0-dev"
+sparrow_s3 = "~0.1.0-dev"
+sparrow_postgres = "~0.1.0-dev"
+
+[[pins]]
+sparrow_core = { path = "../sparrow_core" }
+sparrow_crypto = { path = "../sparrow_crypto" }
+sparrow_io = { path = "../sparrow_io" }
+sparrow_json = { path = "../sparrow_json" }
+sparrow_jwt = { path = "../sparrow_jwt" }
+sparrow_http = { path = "../sparrow_http" }
+sparrow_sqlite = { path = "../sparrow_sqlite" }
+sparrow_templates = { path = "../sparrow_templates" }
+sparrow_client = { path = "../sparrow_client" }
+sparrow_open_telemetry = { path = "../sparrow_open_telemetry" }
+sparrow_valkey = { path = "../sparrow_valkey" }
+sparrow_s3 = { path = "../sparrow_s3" }
+sparrow_postgres = { path = "../sparrow_postgres" }

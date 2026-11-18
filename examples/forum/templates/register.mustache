@@ -1,0 +1,15 @@
+{{> top}}
+<section class="card narrow">
+  <h1>Register</h1>
+  {{#error}}<p class="error" role="alert">{{error}}</p>{{/error}}
+  <form method="post" action="/register" class="stack">
+    <input type="hidden" name="csrf_token" value="{{csrf_token}}">
+    <label>Name <input name="name" value="{{name}}" minlength="3" maxlength="24" pattern="[A-Za-z0-9_\-]+"
+                       autocomplete="username" required autofocus></label>
+    <label>Password <input name="password" type="password" minlength="8" maxlength="200"
+                           autocomplete="new-password" required></label>
+    <button>Create account</button>
+  </form>
+  <p class="hint">Already registered? <a href="/login">Log in</a>.</p>
+</section>
+{{> bottom}}

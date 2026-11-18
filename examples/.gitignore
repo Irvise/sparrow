@@ -1,0 +1,9 @@
+obj/
+bin/
+alire/
+config/
+*.db
+*.db-*
+cert.pem
+key.pem
+file_drop/uploads/

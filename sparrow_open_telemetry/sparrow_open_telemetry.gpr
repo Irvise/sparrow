@@ -1,0 +1,30 @@
+with "sparrow_core.gpr";
+with "sparrow_io.gpr";
+with "sparrow_json.gpr";
+with "sparrow_http.gpr";
+with "sparrow_client.gpr";
+with "config/sparrow_open_telemetry_config.gpr";
+project Sparrow_Open_Telemetry is
+
+   for Library_Name use "Sparrow_Open_Telemetry";
+   for Library_Version use Project'Library_Name & ".so." & Sparrow_Open_Telemetry_Config.Crate_Version;
+
+   for Source_Dirs use ("src/", "config/");
+   for Object_Dir use "obj/" & Sparrow_Open_Telemetry_Config.Build_Profile;
+   for Create_Missing_Dirs use "True";
+   for Library_Dir use "lib";
+
+   type Library_Type_Type is ("relocatable", "static", "static-pic");
+   Library_Type : Library_Type_Type :=
+     external ("SPARROW_OPEN_TELEMETRY_LIBRARY_TYPE", external ("LIBRARY_TYPE", "static"));
+   for Library_Kind use Library_Type;
+
+   package Compiler is
+      for Default_Switches ("Ada") use Sparrow_Open_Telemetry_Config.Ada_Compiler_Switches;
+   end Compiler;
+
+   package Binder is
+      for Switches ("Ada") use ("-Es"); --  Symbolic traceback
+   end Binder;
+
+end Sparrow_Open_Telemetry;

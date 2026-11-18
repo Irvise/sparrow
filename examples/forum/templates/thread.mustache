@@ -1,0 +1,26 @@
+{{> top}}
+<p class="back"><a href="/">← All threads</a></p>
+<section class="card">
+  <h1>{{title}}</h1>
+  <ol class="posts" data-watch="{{id}}">
+    {{#posts}}
+      <li id="post-{{post_id}}">
+        <div class="meta"><strong>{{author}}</strong> · {{written}}</div>
+        <div class="body">{{body}}</div>
+      </li>
+    {{/posts}}
+  </ol>
+</section>
+{{#logged_in}}
+<section class="card">
+  <h2>Reply</h2>
+  {{#error}}<p class="error" role="alert">{{error}}</p>{{/error}}
+  <form method="post" action="/threads/{{id}}/replies" class="stack">
+    <input type="hidden" name="csrf_token" value="{{csrf_token}}">
+    <textarea name="body" rows="4" maxlength="10000" required>{{draft}}</textarea>
+    <button>Post reply</button>
+  </form>
+</section>
+{{/logged_in}}
+{{^logged_in}}<p class="hint"><a href="/login">Log in</a> to reply.</p>{{/logged_in}}
+{{> bottom}}
