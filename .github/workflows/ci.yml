@@ -37,7 +37,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: alire-project/setup-alire@v4
+      - uses: alire-project/setup-alire@v6
         with:
           version: 2.1.0
           toolchain: gprbuild gnat_native^${{ matrix.gnat }}
