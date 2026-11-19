@@ -12,8 +12,6 @@ on:
   push:
     branches: [master]
   pull_request:
-    types:
-      - opened
   workflow_dispatch:
   schedule:
     - cron: "17 3 * * *"   #  nightly: the long fuzzing run
