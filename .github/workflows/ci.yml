@@ -102,7 +102,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: alire-project/setup-alire@v4
+      - uses: alire-project/setup-alire@latest
         with:
           version: 2.1.0
           toolchain: gprbuild gnat_native
@@ -127,7 +127,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: alire-project/setup-alire@v4
+      - uses: alire-project/setup-alire@latest
         with:
           version: 2.1.0
           toolchain: gprbuild gnat_native
@@ -147,7 +147,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: alire-project/setup-alire@v4
+      - uses: alire-project/setup-alire@latest
         with:
           version: 2.1.0
           toolchain: gprbuild gnat_native
