@@ -1,0 +1,8 @@
+/* What a phpBB 2 style does not cover: the log-out form shown as a menu link, errors, hidden notices. */
+form.inline { display: inline; margin: 0; }
+button.mainmenu { border: 0; padding: 0; background: none; font: inherit; color: inherit; cursor: pointer; }
+button.mainmenu:hover { text-decoration: underline; }
+.error { color: #b00000; }
+[hidden] { display: none !important; }
+pre.code { white-space: pre-wrap; margin: 0 0 6px; }
+.postbody { overflow-wrap: anywhere; }

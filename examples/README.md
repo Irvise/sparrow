@@ -90,8 +90,15 @@ where its pointer is about 20 times a second and draws what is pushed, easing be
 
 ## `forum`: accounts, sessions and live updates
 
-[forum](forum): register, log in, start threads and reply, with plain HTML forms and no framework on the
-client.
+[forum](forum): a bulletin board in the manner of phpBB 2. Forums sit in categories. Each forum lists its
+topics with reply and view counts and the last post. Topics show their posts 15 to a page, each beside its
+author's rank, joining date and post count. Posts take BBCode (`[b] [i] [u] [quote] [code] [url]`) and can
+be quoted. There is a memberlist. Everything is plain HTML forms, with no framework on the client.
+
+- The pages use phpBB 2's table layout, CSS class names and image names. Any phpBB 2 style folder can dress
+  them: `FORUM_STYLE=path/to/subSilver bin/forum`. The pages link the style's stylesheet, named after the
+  folder (`subSilver/subSilver.css`), and its `images/` (`images/lang_english/post.gif` and the rest). The
+  default style is [forum/styles/classic](forum/styles/classic).
 
 - Passwords are Argon2id hashes (`Sparrow.Crypto.Passwords`), checked on workers. A login with an unknown name
   takes as long as one with a wrong password.

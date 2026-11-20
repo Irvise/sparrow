@@ -118,7 +118,7 @@ procedure Client_Tests is
    --  a scripted server: answers each connection with the next answer as written, and keeps what it was sent
 
    Script_Port : constant := 18_476;
-   Silent      : constant String := "(silent)";   --  answer nothing, and hold the connection for a second
+   Silent      : constant String := "(silent)";   --  answer nothing, and hold the connection for 3 seconds
 
    type Answer_List is array (1 .. 4) of Unbounded_String;
 
@@ -163,7 +163,7 @@ procedure Client_Tests is
             end loop;
             Append (Seen, Received);
             if Script (Turn) = Silent then
-               Sparrow.IO.Process.Sleep (1000);
+               Sparrow.IO.Process.Sleep (3000);
             else
                declare
                   Answer : constant String := To_String (Script (Turn));
@@ -266,7 +266,8 @@ procedure Client_Tests is
       Check (Says ("larger than"), "scripted: a length past Max_Response raises before reading");
 
       Scripted (Only (Silent), 1, Base & "/", Answer, Problem, Requests, Using => (Timeout => 300, others => <>));
-      Check (Says ("time ran out"), "scripted: a server that never answers runs out of time");
+      Check (Says ("time ran out"), "scripted: a server that never answers runs out of time (said: "
+             & To_String (Problem) & ")");
 
       Scripted ([To_Unbounded_String ("HTTP/1.1 302 Found" & CRLF & "Location: http://localhost:18476/next"
                                       & CRLF & "Content-Length: 0" & CRLF & CRLF),

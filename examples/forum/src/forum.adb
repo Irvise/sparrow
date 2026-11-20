@@ -1,13 +1,14 @@
---  A small forum: register, log in, start threads and reply. Sessions live in sealed cookies (or Valkey), every
---  form carries a CSRF token, passwords are stored as Argon2id hashes, and open pages hear of new posts over
---  Server-Sent Events.
+--  A small bulletin board in the manner of phpBB 2: forums in categories, topics, replies with BBCode and
+--  quotes, member ranks. Sessions live in sealed cookies (or Valkey), every form carries a CSRF token,
+--  passwords are stored as Argon2id hashes, and open pages hear of new posts over Server-Sent Events.
 --
 --     cd examples && bin/forum           then open http://localhost:8080/
 --
---  DATABASE names the SQLite file (default forum.db). SESSION_SECRET (32 bytes or more) keeps sessions valid
---  across restarts; while changing it, SESSION_SECRET_PREVIOUS keeps the old sessions valid too. Logging in
---  and registering are rate limited per client. VALKEY_URL (valkey://:password@host:6379) keeps sessions and
---  those limits in Valkey, shared by every forum server. PORT and the rest as for every Sparrow server.
+--  FORUM_STYLE names a phpBB 2 style folder (default forum/styles/classic). DATABASE names the SQLite file
+--  (default forum.db). SESSION_SECRET (32 bytes or more) keeps sessions valid across restarts; while changing
+--  it, SESSION_SECRET_PREVIOUS keeps the old sessions valid too. Logging in and registering are rate limited
+--  per client. VALKEY_URL (valkey://:password@host:6379) keeps sessions and those limits in Valkey, shared by
+--  every forum server. PORT and the rest as for every Sparrow server.
 with Example_Tls;
 with Forum_Pages;
 with Sparrow.Http; use Sparrow.Http;
@@ -19,7 +20,7 @@ with Sparrow.IO.Process;
 with Sparrow.Valkey.Limits;
 
 procedure Forum is
-   Routes   : Router (Capacity => 12);
+   Routes   : Router (Capacity => 16);
    Shared   : constant String := Sparrow.IO.Process.Environment ("VALKEY_URL", Default => "");
    --  Five tries at once per client, then one every ten seconds: password guessing gets slow. With VALKEY_URL,
    --  every server counts in the same buckets; otherwise each in its own memory.
@@ -32,8 +33,10 @@ begin
    Forum_Pages.Load_Views ("forum/templates");
 
    Add (Routes, Get, "/", Forum_Pages.Home'Access);
+   Add (Routes, Get, "/boards/:id", Forum_Pages.Show_Board'Access);
+   Add (Routes, Post, "/boards/:id/threads", Forum_Pages.New_Thread'Access);
    Add (Routes, Get, "/threads/:id", Forum_Pages.Show_Thread'Access);
-   Add (Routes, Post, "/threads", Forum_Pages.New_Thread'Access);
+   Add (Routes, Get, "/members", Forum_Pages.Members'Access);
    Add (Routes, Post, "/threads/:id/replies", Forum_Pages.Reply'Access);
    Add (Routes, Get, "/register", Forum_Pages.Register_Form'Access);
    Add (Routes, Post, "/register", Limits.Wrap (Attempts, Forum_Pages.Register'Access));
@@ -42,6 +45,7 @@ begin
    Add (Routes, Post, "/logout", Forum_Pages.Logout'Access);
    Add (Routes, Get, "/events", Forum_Pages.Events'Access, On_Reactor);
    Add (Routes, Get, "/static/*file", Static.Folder ("forum/public", Max_Age => 3600));
+   Add (Routes, Get, "/style/*file", Static.Folder (Forum_Pages.Style_Folder, Max_Age => 3600));
 
    Sparrow.Http.Servers.Run
      (Sparrow.Http.Servers.From_Environment, Routes,

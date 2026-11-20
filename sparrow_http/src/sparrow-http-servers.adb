@@ -331,6 +331,11 @@ package body Sparrow.Http.Servers is
       Started       : Ada.Real_Time.Time := Ada.Real_Time.Time_First;
       Route_Index   : Natural := 0;          --  the matched route; 0: none
       Span_Started  : Spans.Unix_Nanoseconds := 0;   --  0: the request's span is not recorded
+      --  for debug lines: which connection the request came on (its reactor, and its number there; 0: not
+      --  known), and how many requests that connection has begun
+      Link_Reactor  : Natural := 0;
+      Link_Number   : Natural := 0;
+      Requests_Seen : Natural := 0;
    end record;
 
    --  What the server keeps for one HTTP/2 lane beside the session's own: its request's log, and what it is owed.
@@ -447,6 +452,7 @@ package body Sparrow.Http.Servers is
       Free_Total   : Natural := 0;
       By_Socket    : Slot_Maps.Map;
       Active       : Natural := 0;
+      Accepted     : Natural := 0;          --  connections taken so far, numbering them for debug lines
       Now          : Milliseconds := 0;
    end record;
 
@@ -475,6 +481,15 @@ package body Sparrow.Http.Servers is
      (case Verb is
          when Get => "GET", when Head => "HEAD", when Post => "POST", when Put => "PUT", when Patch => "PATCH",
          when Delete => "DELETE", when Options => "OPTIONS", when Other => "OTHER");
+
+   --  The connection's name in debug lines: its reactor and its number there ("3-17").
+   function Link_Name (Reactor, Number : Natural) return String is
+     (Reactor'Image (2 .. Reactor'Image'Last) & "-" & Number'Image (2 .. Number'Image'Last));
+
+   --  Connections open now, of every kind, and those of them that are event streams.
+   function Total_Open return Long_Long_Integer is
+     (Metrics.Value (Open_Connections (Http_Mode)) + Metrics.Value (Open_Connections (Stream_Mode))
+      + Metrics.Value (Open_Connections (Socket_Mode)) + Metrics.Value (Open_Connections (Http_2_Mode)));
 
    procedure Set_Client (This : in out Exchange; Text : String) is begin
       This.Client_Length := Natural'Min (Text'Length, This.Client'Length);
@@ -539,6 +554,7 @@ package body Sparrow.Http.Servers is
       This.Pending_Log := True;
       This.Parsed      := True;
       This.Route_Index := 0;
+      This.Requests_Seen := (if This.Requests_Seen = Natural'Last then 1 else This.Requests_Seen + 1);
       This.Log_Verb    := Requests.Verb (Request);
       This.Path_Length := Natural'Min (Path'Length, This.Log_Path'Length);
       This.Log_Path (1 .. This.Path_Length) := Path (Path'First .. Path'First + This.Path_Length - 1);
@@ -630,6 +646,10 @@ package body Sparrow.Http.Servers is
          Logs.Add (Line, "client", This.Client (1 .. This.Client_Length));
          if Kind'Length > 0 then
             Logs.Add (Line, "kind", Kind);
+         end if;
+         if This.Link_Number > 0 and then Logs.Enabled (Logs.Debug) then
+            Logs.Add (Line, "connection", Link_Name (This.Link_Reactor, This.Link_Number));
+            Logs.Add (Line, "nth", Long_Long_Integer (This.Requests_Seen));
          end if;
          Logs.Write (Line);
       end;
@@ -751,6 +771,25 @@ package body Sparrow.Http.Servers is
       This.Body_Routed  := False;
       This.Body_Blocked := False;
       Metrics.Add (Open_Connections (This.Mode), -1);
+      if Logs.Enabled (Logs.Debug) then
+         declare
+            Line : Logs.Line_Builder (Capacity => 512);
+         begin
+            Logs.Start (Line, Logs.Debug, "connection closed");
+            Logs.Add (Line, "connection", Link_Name (This.Current.Link_Reactor, This.Current.Link_Number));
+            Logs.Add (Line, "mode", (case This.Mode is
+                                        when Http_Mode   => "http",      when Stream_Mode => "event stream",
+                                        when Socket_Mode => "websocket", when Http_2_Mode => "http/2"));
+            Logs.Add (Line, "by", (if This.Peer_Done then "client"
+                                   elsif Owner.Now - This.Last_Activity >= Active_Settings.Idle_Timeout then "idle"
+                                   else "server"));
+            Logs.Add (Line, "requests", Long_Long_Integer (This.Current.Requests_Seen));
+            Logs.Add (Line, "open_ms", Long_Long_Integer (Owner.Now - This.Opened_At));
+            Logs.Add (Line, "open", Total_Open);
+            Logs.Add (Line, "streams", Metrics.Value (Open_Connections (Stream_Mode)));
+            Logs.Write (Line);
+         end;
+      end if;
       This.Mode         := Http_Mode;
       This.Endpoint     := 0;
       This.Heartbeat    := False;
@@ -978,6 +1017,17 @@ package body Sparrow.Http.Servers is
          Responses.Write_Head (Response, This.Output, Now, Keep_Alive => True);
          Append_Chunk (This.Output, Content (Response.Content));
          Change_Mode (This, Stream_Mode);
+         if Logs.Enabled (Logs.Debug) then
+            declare
+               Line : Logs.Line_Builder (Capacity => 512);
+            begin
+               Logs.Start (Line, Logs.Debug, "event stream opened");
+               Logs.Add (Line, "connection", Link_Name (This.Current.Link_Reactor, This.Current.Link_Number));
+               Logs.Add (Line, "open", Total_Open);
+               Logs.Add (Line, "streams", Metrics.Value (Open_Connections (Stream_Mode)));
+               Logs.Write (Line);
+            end;
+         end if;
          This.Heartbeat   := Response.Heartbeat;
          This.Close_After := False;
          Set_Live (Owner, Slot, True);
@@ -2214,6 +2264,22 @@ package body Sparrow.Http.Servers is
                This.Peer          := Peer;
                This.Current.Trace         := No_Trace;
                This.Current.Pending_Log   := False;
+               Owner.Accepted := (if Owner.Accepted = Natural'Last then 1 else Owner.Accepted + 1);
+               This.Current.Link_Reactor  := Natural (Owner.Id);
+               This.Current.Link_Number   := Owner.Accepted;
+               This.Current.Requests_Seen := 0;
+               if Logs.Enabled (Logs.Debug) then
+                  declare
+                     Line : Logs.Line_Builder (Capacity => 512);
+                  begin
+                     Logs.Start (Line, Logs.Debug, "connection opened");
+                     Logs.Add (Line, "connection", Link_Name (Natural (Owner.Id), Owner.Accepted));
+                     Logs.Add (Line, "client", Image (Peer));
+                     Logs.Add (Line, "open", Total_Open);
+                     Logs.Add (Line, "streams", Metrics.Value (Open_Connections (Stream_Mode)));
+                     Logs.Write (Line);
+                  end;
+               end if;
                This.Opened_At     := Owner.Now;
                This.Last_Activity := Owner.Now;
                This.Handshaking   := Active_Security /= null;

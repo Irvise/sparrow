@@ -1,0 +1,65 @@
+{{> top}}
+<table width="100%" cellspacing="0" cellpadding="2" border="0" align="center">
+  <tr>
+    <td align="left" valign="bottom">
+      {{#logged_in}}<span class="gensmall">You are logged in as <b>{{user_name}}</b></span><br>{{/logged_in}}
+      <span class="nav"><a href="/" class="nav">Sparrow forum Forum Index</a></span>
+    </td>
+  </tr>
+</table>
+
+<table width="100%" cellpadding="2" cellspacing="1" border="0" class="forumline" data-watch="all">
+  <tr>
+    <th colspan="2" class="thCornerL" height="25" nowrap="nowrap">&nbsp;Forum&nbsp;</th>
+    <th width="50" class="thTop" nowrap="nowrap">&nbsp;Topics&nbsp;</th>
+    <th width="50" class="thTop" nowrap="nowrap">&nbsp;Posts&nbsp;</th>
+    <th class="thCornerR" nowrap="nowrap">&nbsp;Last Post&nbsp;</th>
+  </tr>
+  {{#categories}}
+  <tr>
+    <td class="catLeft" colspan="2" height="28"><span class="cattitle">{{name}}</span></td>
+    <td class="rowpic" colspan="3" align="right">&nbsp;</td>
+  </tr>
+  {{#boards}}
+  <tr>
+    <td class="row1" align="center" valign="middle" height="50">
+      <img src="/style/images/folder_big.gif" width="46" height="25" alt="Forum">
+    </td>
+    <td class="row1" width="100%" height="50">
+      <span class="forumlink"><a href="/boards/{{id}}" class="forumlink">{{name}}</a><br></span>
+      <span class="genmed">{{description}}<br></span>
+    </td>
+    <td class="row2" align="center" valign="middle" height="50"><span class="gensmall">{{topics}}</span></td>
+    <td class="row2" align="center" valign="middle" height="50"><span class="gensmall">{{posts}}</span></td>
+    <td class="row2" align="center" valign="middle" height="50" nowrap="nowrap">
+      <span class="gensmall">
+        {{#last_time}}{{last_time}}<br>{{last_author}}
+        <a href="/threads/{{last_thread}}?page={{last_page}}#post-{{last_post}}"><img
+           src="/style/images/icon_latest_reply.gif" border="0" alt="View latest post"></a>{{/last_time}}
+        {{^last_time}}No Posts{{/last_time}}
+      </span>
+    </td>
+  </tr>
+  {{/boards}}
+  {{/categories}}
+</table>
+
+<br>
+<table width="100%" cellpadding="3" cellspacing="1" border="0" class="forumline">
+  <tr><td class="catHead" colspan="2" height="28"><span class="cattitle">Statistics</span></td></tr>
+  {{#totals}}
+  <tr>
+    <td class="row1" align="center" valign="middle">
+      <img src="/style/images/whosonline.gif" alt="Statistics">
+    </td>
+    <td class="row1" align="left" width="100%">
+      <span class="gensmall">
+        Our users have posted a total of <b>{{posts}}</b> articles in <b>{{topics}}</b> topics<br>
+        We have <b>{{members}}</b> registered users<br>
+        {{#newest}}The newest registered user is <b>{{newest}}</b>{{/newest}}
+      </span>
+    </td>
+  </tr>
+  {{/totals}}
+</table>
+{{> bottom}}

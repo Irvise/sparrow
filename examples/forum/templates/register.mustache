@@ -1,15 +1,29 @@
 {{> top}}
-<section class="card narrow">
-  <h1>Register</h1>
-  {{#error}}<p class="error" role="alert">{{error}}</p>{{/error}}
-  <form method="post" action="/register" class="stack">
-    <input type="hidden" name="csrf_token" value="{{csrf_token}}">
-    <label>Name <input name="name" value="{{name}}" minlength="3" maxlength="24" pattern="[A-Za-z0-9_\-]+"
-                       autocomplete="username" required autofocus></label>
-    <label>Password <input name="password" type="password" minlength="8" maxlength="200"
-                           autocomplete="new-password" required></label>
-    <button>Create account</button>
-  </form>
-  <p class="hint">Already registered? <a href="/login">Log in</a>.</p>
-</section>
+<form method="post" action="/register">
+  <input type="hidden" name="csrf_token" value="{{csrf_token}}">
+  <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
+    <tr><td align="left" class="nav"><a href="/" class="nav">Sparrow forum Forum Index</a></td></tr>
+  </table>
+  <table width="100%" cellpadding="4" cellspacing="1" border="0" class="forumline" align="center">
+    <tr><th height="25" class="thHead" nowrap="nowrap" colspan="2">Registration information</th></tr>
+    {{#error}}
+    <tr><td class="row3" colspan="2" align="center"><span class="gen error" role="alert">{{error}}</span></td></tr>
+    {{/error}}
+    <tr>
+      <td class="row1" width="38%" align="right"><span class="gen">Username:</span></td>
+      <td class="row2"><input type="text" class="post" name="name" size="25" value="{{name}}" minlength="3" maxlength="24" pattern="[A-Za-z0-9_\-]+" autocomplete="username" required
+          autofocus></td>
+    </tr>
+    <tr>
+      <td class="row1" align="right"><span class="gen">Password:</span></td>
+      <td class="row2"><input type="password" class="post" name="password" size="25" minlength="8" maxlength="200" autocomplete="new-password" required></td>
+    </tr>
+    <tr>
+      <td class="catBottom" colspan="2" align="center" height="28">
+        <input type="submit" class="mainoption" value="Submit">
+      </td>
+    </tr>
+  </table>
+</form>
+<p align="center"><span class="gensmall">Already registered? <a href="/login">Log in</a>.</span></p>
 {{> bottom}}

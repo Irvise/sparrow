@@ -1,0 +1,85 @@
+{{> top}}
+<table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
+  <tr>
+    <td align="left" valign="bottom" colspan="2">
+      <a class="maintitle" href="/boards/{{board_id}}">{{title}}</a><br>
+      <span class="gensmall">{{description}}<br>&nbsp;</span>
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="middle" width="50">
+      {{#logged_in}}<a href="#post"><img src="/style/images/lang_english/post.gif" border="0"
+         alt="Post new topic"></a>{{/logged_in}}
+    </td>
+    <td align="left" valign="middle" class="nav" width="100%">
+      <span class="nav">&nbsp;&nbsp;&nbsp;<a href="/" class="nav">Sparrow forum Forum Index</a> -&gt;
+        <a class="nav" href="/boards/{{board_id}}">{{title}}</a></span>
+    </td>
+    <td align="right" valign="bottom" nowrap="nowrap">{{> pages}}</td>
+  </tr>
+</table>
+
+<table border="0" cellpadding="4" cellspacing="1" width="100%" class="forumline" data-watch="all">
+  <tr>
+    <th colspan="2" align="center" height="25" class="thCornerL" nowrap="nowrap">&nbsp;Topics&nbsp;</th>
+    <th width="50" align="center" class="thTop" nowrap="nowrap">&nbsp;Replies&nbsp;</th>
+    <th width="100" align="center" class="thTop" nowrap="nowrap">&nbsp;Author&nbsp;</th>
+    <th width="50" align="center" class="thTop" nowrap="nowrap">&nbsp;Views&nbsp;</th>
+    <th align="center" class="thCornerR" nowrap="nowrap">&nbsp;Last Post&nbsp;</th>
+  </tr>
+  {{#topics}}
+  <tr>
+    <td class="row1" align="center" valign="middle" width="20">
+      <img src="/style/images/folder.gif" width="19" height="18" alt="Topic">
+    </td>
+    <td class="row1" width="100%"><span class="topictitle"><a href="/threads/{{id}}" class="topictitle">{{title}}</a></span></td>
+    <td class="row2" align="center" valign="middle"><span class="postdetails">{{replies}}</span></td>
+    <td class="row3" align="center" valign="middle"><span class="name">{{author}}</span></td>
+    <td class="row2" align="center" valign="middle"><span class="postdetails">{{views}}</span></td>
+    <td class="row3Right" align="center" valign="middle" nowrap="nowrap">
+      <span class="postdetails">{{last_time}}<br>{{last_author}}
+        <a href="/threads/{{id}}?page={{last_page}}#post-{{last_post}}"><img src="/style/images/icon_latest_reply.gif"
+           border="0" alt="View latest post"></a></span>
+    </td>
+  </tr>
+  {{/topics}}
+  {{^topics}}
+  <tr>
+    <td class="row1" colspan="6" height="30" align="center" valign="middle">
+      <span class="gen">There are no posts in this forum.{{#logged_in}} Start the first topic below.{{/logged_in}}</span>
+    </td>
+  </tr>
+  {{/topics}}
+  <tr><td class="catBottom" align="center" valign="middle" colspan="6" height="28">&nbsp;</td></tr>
+</table>
+<table width="100%" cellspacing="2" border="0" align="center" cellpadding="2">
+  <tr><td align="right" valign="top" nowrap="nowrap">{{> pages}}</td></tr>
+</table>
+<br>
+
+{{#logged_in}}
+<form method="post" action="/boards/{{board_id}}/threads" id="post">
+  <input type="hidden" name="csrf_token" value="{{csrf_token}}">
+  <table border="0" cellpadding="3" cellspacing="1" width="100%" class="forumline">
+    <tr><th class="thHead" colspan="2" height="25"><b>Post a new topic</b></th></tr>
+    <tr>
+      <td class="row1" width="22%"><span class="gen"><b>Subject</b></span></td>
+      <td class="row2" width="78%"><input type="text" name="title" size="45" maxlength="120" class="post" required></td>
+    </tr>
+    <tr>
+      <td class="row1" valign="top"><span class="gen"><b>Message body</b></span><br>
+        <span class="gensmall">BBCode is <b>on</b>: [b] [i] [u] [quote] [code] [url]</span></td>
+      <td class="row2"><textarea name="body" rows="12" cols="35" maxlength="10000" class="post" required></textarea></td>
+    </tr>
+    <tr>
+      <td class="catBottom" colspan="2" align="center" height="28">
+        <input type="submit" class="mainoption" value="Submit">
+      </td>
+    </tr>
+  </table>
+</form>
+{{/logged_in}}
+{{^logged_in}}
+<p align="center"><span class="gensmall"><a href="/login">Log in</a> or <a href="/register">register</a> to post.</span></p>
+{{/logged_in}}
+{{> bottom}}

@@ -1,0 +1,50 @@
+/* classic: the forum's own style. Any phpBB 2 style folder can replace it: FORUM_STYLE=path/to/folder. */
+body { background: #dfe3e8; color: #1c2430; margin: 8px; font-family: Verdana, Arial, Helvetica, sans-serif;
+       scrollbar-face-color: #c9d3de; }
+a:link, a:active, a:visited { color: #1d4f86; }
+a:hover { color: #c0392b; text-decoration: underline; }
+hr { height: 0; border: 0; border-top: 1px solid #b9c3cf; }
+
+.bodyline { background: #ffffff; border: 1px solid #8796a8; }
+.forumline { background: #8796a8; }
+
+td.row1 { background: #eef1f5; }
+td.row2 { background: #e2e7ee; }
+td.row3, td.row3Right { background: #d4dbe4; }
+td.rowpic { background: #c9d3de linear-gradient(90deg, #c9d3de, #eef1f5); }
+td.spaceRow { background: #d4dbe4; border: solid #ffffff; border-width: 0 1px; }
+
+th { color: #f4d27a; font-size: 11px; font-weight: bold; height: 25px; white-space: nowrap;
+     background: #2f4a6b linear-gradient(#45658c, #2a4363); }
+td.cat, td.catHead, td.catSides, td.catLeft, td.catRight, td.catBottom {
+  height: 28px; background: #c9d3de linear-gradient(#dde4ec, #bcc8d6); border: solid #ffffff; border-width: 0 }
+th.thHead, th.thSides, th.thTop, th.thLeft, th.thRight, th.thBottom, th.thCornerL, th.thCornerR {
+  border: solid #ffffff; border-width: 0; }
+th.thHead, td.catHead { font-size: 12px; border-top-width: 1px; }
+td.catBottom { border-top-width: 1px; }
+
+.maintitle, a.maintitle { font: bold 22px "Trebuchet MS", Verdana, sans-serif; color: #1c2430; text-decoration: none; }
+.gen { font-size: 12px; }
+.genmed { font-size: 11px; }
+.gensmall { font-size: 10px; }
+.gen, .genmed, .gensmall { color: #1c2430; }
+.mainmenu { font-size: 11px; color: #1c2430; }
+a.mainmenu { text-decoration: none; color: #1d4f86; }
+.cattitle { font-weight: bold; font-size: 12px; letter-spacing: 1px; color: #1d4f86; }
+.forumlink, a.forumlink { font-weight: bold; font-size: 12px; color: #1d4f86; }
+.nav, a.nav { font-weight: bold; font-size: 11px; color: #1c2430; }
+.topictitle, a.topictitle { font-weight: bold; font-size: 11px; color: #1c2430; }
+a.topictitle:visited { color: #4a6a8f; }
+.name { font-size: 11px; color: #1c2430; }
+.postdetails { font-size: 10px; color: #1c2430; }
+.postbody { font-size: 12px; line-height: 18px; }
+.quote { font-size: 11px; color: #333d4a; line-height: 125%; background: #f7f9fb; border: 1px solid #b9c3cf;
+         padding: 4px 6px; margin: 2px 0 6px; }
+.code { font: 11px Courier, "Courier New", monospace; color: #1f5e2e; background: #f7f9fb;
+        border: 1px solid #b9c3cf; padding: 4px 6px; }
+.copyright { font-size: 10px; color: #4f5c6b; letter-spacing: -1px; }
+
+input, textarea, select { color: #1c2430; font: 11px Verdana, Arial, Helvetica, sans-serif; }
+input.post, textarea.post { background: #ffffff; border: 1px solid #8796a8; }
+textarea.post { width: 100%; }
+input.mainoption, input.button { background: #f4f6f9; border: 1px solid #8796a8; font-weight: bold; padding: 2px 8px; }
