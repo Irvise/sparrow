@@ -663,6 +663,7 @@ package body Sparrow.Deflate with SPARK_Mode is
       Length   := 0;
       Distance := 0;
       for Tries in 1 .. Max_Chain loop
+         pragma Loop_Invariant (Room <= Max_Match and then Room <= Input'Last - Position + 1);
          pragma Loop_Invariant (Best in Min_Match - 1 .. Room
                                 and then (Length = 0 or else (Length = Best and then Length >= Min_Match
                                                               and then Distance in 1 .. Window_Size - 1)));
@@ -678,6 +679,7 @@ package body Sparrow.Deflate with SPARK_Mode is
                   Run := Run + 1;
                end loop;
                if Run > Best then
+                  pragma Assert (Start < Position and then Position - Start = Natural (Offset - Candidate));
                   Best     := Run;
                   Length   := Run;
                   Distance := Position - Start;

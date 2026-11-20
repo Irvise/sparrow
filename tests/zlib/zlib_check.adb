@@ -21,8 +21,11 @@ package body Zlib_Check is
       Reserved  : unsigned_long := 0;
    end record with Convention => C;
 
-   function Inflate_Init (Stream : access Z_Stream; Window_Bits : int; Version : char_array; Size : int) return int
+   function Inflate_Init (Stream : access Z_Stream; Window_Bits : int; Version : System.Address; Size : int)
+      return int
       with Import, Convention => C, External_Name => "inflateInit2_";
+   function Zlib_Version return System.Address
+      with Import, Convention => C, External_Name => "zlibVersion";
    function Inflate (Stream : access Z_Stream; Flush : int) return int
       with Import, Convention => C, External_Name => "inflate";
    function Inflate_End (Stream : access Z_Stream) return int
@@ -39,8 +42,10 @@ package body Zlib_Check is
       Input  : aliased constant String := Data & ' ';   --  never empty, so it has an address
       Result : int;
    begin
-      if Inflate_Init (Stream'Access, 31, To_C ("1.2.11"), int (Z_Stream'Size / 8)) /= 0 then   --  31: gzip
-         raise Not_Gzip with "inflateInit2 failed";
+      --  31: gzip. The version is the loaded library's own: inflateInit2_ refuses one it does not match.
+      Result := Inflate_Init (Stream'Access, 31, Zlib_Version, int (Z_Stream'Size / 8));
+      if Result /= 0 then
+         raise Not_Gzip with "inflateInit2 failed:" & Result'Image;
       end if;
       Stream.Next_In   := Input (Input'First)'Address;
       Stream.Avail_In  := unsigned (Data'Length);

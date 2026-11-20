@@ -304,7 +304,7 @@ package body Sparrow.Client is
                   IO.Sockets.Send (This.Socket, Rest, Count, Failure);
                   if Count < 0 and then Failure.Kind /= Interrupted then
                      raise Request_Error with
-                       (if Failure.Kind = Would_Block then "sending timed out"
+                       (if Failure.Kind in Would_Block | Timed_Out then "sending timed out"
                         else "sending failed: " & Message (Failure));
                   end if;
                   Sent := Sent + Integer'Max (Count, 0);
@@ -360,7 +360,7 @@ package body Sparrow.Client is
                      return False;
                   elsif Failure.Kind /= Interrupted then
                      raise Request_Error with
-                       (if Failure.Kind = Would_Block then "the time ran out waiting for the answer"
+                       (if Failure.Kind in Would_Block | Timed_Out then "the time ran out waiting for the answer"
                         else "receiving failed: " & Message (Failure));
                   end if;
                end;

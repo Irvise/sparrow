@@ -91,7 +91,7 @@ package Sparrow.IO.Sockets with SPARK_Mode is
            Post   => (Socket = No_Descriptor) = (not Succeeded (Failure));
 
    --  Bound every later read and write on a blocking Socket by Timeout (0: no bound). A read or write that
-   --  runs out of time fails with Would_Block.
+   --  runs out of time fails with Would_Block or Timed_Out, as the system reports it.
    procedure Set_Timeout (Socket : Descriptor; Timeout : Milliseconds)
       with Global => (In_Out => Kernel), Pre => Timeout in 0 .. 3_600_000;
 

@@ -177,7 +177,7 @@ package body Sparrow.Valkey is
                      if Failure.Kind = Interrupted then
                         Count := 0;
                      else
-                        Fail (This, (if Failure.Kind = Would_Block then "timed out sending"
+                        Fail (This, (if Failure.Kind in Would_Block | Timed_Out then "timed out sending"
                                      else "sending failed: " & Message (Failure)));
                      end if;
                   end if;
@@ -230,7 +230,7 @@ package body Sparrow.Valkey is
                   elsif Count = 0 then
                      Fail (This, "the server closed the connection");
                   elsif Failure.Kind /= Interrupted then
-                     Fail (This, (if Failure.Kind = Would_Block then "timed out waiting for a reply"
+                     Fail (This, (if Failure.Kind in Would_Block | Timed_Out then "timed out waiting for a reply"
                                   else "receiving failed: " & Message (Failure)));
                   end if;
                end;

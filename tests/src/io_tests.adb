@@ -122,12 +122,25 @@ begin
    Receive (Client, Bytes, Got, Failure);   --  left unread, closing would reset the connection
 
    Close (Client);
-   Wait (Loop_One, Found, 1000, Count);
-   Check ((for some Each of Found (1 .. Count) => Each.Item = Served and then Each.Closed), "peer close is seen");
+   --  Other edges (the send buffer draining) may come first: wait for the close itself, a second at most.
+   declare
+      Closed_Seen : Boolean := False;
+   begin
+      for Attempt in 1 .. 20 loop
+         Wait (Loop_One, Found, 50, Count);
+         Closed_Seen := (for some Each of Found (1 .. Count) => Each.Item = Served and then Each.Closed);
+         exit when Closed_Seen;
+      end loop;
+      Check (Closed_Seen, "peer close is seen");
+   end;
    Receive (Served, Bytes, Got, Failure);
    Check (Got = 0, "end of stream");
-   Send (Served, "x", Got, Failure);
-   Send (Served, "x", Got, Failure);
+   --  The first send after the close draws the peer's reset; a later one fails on it once it has arrived.
+   for Attempt in 1 .. 100 loop
+      Send (Served, "x", Got, Failure);
+      exit when Got = -1;
+      Sparrow.IO.Process.Sleep (10);
+   end loop;
    Check (Got = -1 and then Failure.Kind = Connection_Closed, "send to a closed peer is a value, not a signal");
 
    Unwatch (Loop_One, Served);
@@ -237,7 +250,11 @@ begin
          Ada.Text_IO.Open (File, Ada.Text_IO.In_File, Output_File);
          while not Ada.Text_IO.End_Of_File (File) loop
             declare
-               Line   : constant String := Ada.Text_IO.Get_Line (File);
+               Read    : constant String := Ada.Text_IO.Get_Line (File);
+               --  Windows writes standard error in text mode: lines end in CR LF there.
+               Line    : constant String :=
+                 (if Read'Length > 0 and then Read (Read'Last) = ASCII.CR then Read (Read'First .. Read'Last - 1)
+                  else Read);
                Task_At : constant Natural := Index (Line, " task=");
                N_At    : constant Natural := Index (Line, " n=");
             begin
