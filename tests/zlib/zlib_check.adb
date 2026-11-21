@@ -53,12 +53,13 @@ package body Zlib_Check is
       Input  : aliased constant String := Data & ' ';   --  never empty, so it has an address
       Result : int;
    begin
-      --  31: gzip. Version and size are checked by inflateInit2_ against the library's own.
-      Result := Inflate_Init (Stream'Access, 31, Zlib_Version, int (Z_Stream'Size / 8));
+      --  31: gzip. Version and size are checked by inflateInit2_ against the library's own; the size is C's
+      --  sizeof, trailing padding included, which 'Size leaves out.
+      Result := Inflate_Init (Stream'Access, 31, Zlib_Version, int (Z_Stream'Object_Size / 8));
       if Result /= 0 then
          Free (Output);
-         raise Not_Gzip with "inflateInit2 failed:" & Result'Image & " (z_stream of" & int'Image (Z_Stream'Size / 8)
-                             & " bytes)";
+         raise Not_Gzip with "inflateInit2 failed:" & Result'Image & " (z_stream of"
+                             & int'Image (Z_Stream'Object_Size / 8) & " bytes)";
       end if;
       Stream.Next_In   := Input (Input'First)'Address;
       Stream.Avail_In  := unsigned (Data'Length);
