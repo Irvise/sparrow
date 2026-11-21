@@ -53,7 +53,7 @@ SPARK code. The FreeBSD body of `sparrow_io` compiles but has never run.
 | `static_site` | A static web server: one route, `Sparrow.Http.Static` |
 | `todo_app` | Server-rendered Mustache templates with htmx, SQLite, static assets |
 | `blob_game` | Gobble, a real-time multiplayer blob arena with bots: a protected world pushed to every player over a WebSocket, a canvas client |
-| `forum` | Register, log in, start threads and reply: sealed-cookie sessions, CSRF tokens, Argon2id, live updates over Server-Sent Events |
+| `forum` | A phpBB 2-style bulletin board that takes phpBB 2 style folders: sealed-cookie sessions, CSRF tokens, Argon2id, live updates over Server-Sent Events |
 | `file_drop` | Drag-and-drop uploads streamed to disk, or straight to S3 with presigned URLs; live list over Server-Sent Events |
 | `notes_api`, `token_issuer` | A JSON API over PostgreSQL that trusts EdDSA tokens from another service's JWKS |
 

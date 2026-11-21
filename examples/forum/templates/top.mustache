@@ -3,28 +3,56 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{#title}}{{title}} · {{/title}}Sparrow forum</title>
+  <title>Sparrow forum{{#title}} :: {{title}}{{/title}}</title>
   <link rel="icon" href="/static/bubble.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="{{style_sheet}}">
+  <link rel="stylesheet" href="/static/forum.css">
   <script src="/static/live.js" defer></script>
 </head>
 <body>
-  <header>
-    <a class="brand" href="/"><img src="/static/bubble.svg" alt="" width="28" height="28"> Sparrow forum</a>
-    <nav>
-      {{#logged_in}}
-        <span class="who">{{user_name}}</span>
-        <form method="post" action="/logout">
-          <input type="hidden" name="csrf_token" value="{{csrf_token}}">
-          <button>Log out</button>
-        </form>
-      {{/logged_in}}
-      {{^logged_in}}
-        <a href="/login">Log in</a>
-        <a class="button" href="/register">Register</a>
-      {{/logged_in}}
-    </nav>
-  </header>
-  {{#flash}}<p class="flash" role="status">{{flash}}</p>{{/flash}}
-  <p id="live" class="live" hidden><a href="">New posts — show them</a></p>
-  <main>
+<a name="top"></a>
+<table width="100%" cellspacing="0" cellpadding="10" border="0" align="center">
+  <tr>
+    <td class="bodyline">
+      <table width="100%" cellspacing="0" cellpadding="0" border="0">
+        <tr>
+          <td><a href="/"><img src="/style/images/logo_phpBB.gif" border="0" alt="Forum index" vspace="1"></a></td>
+          <td align="center" width="100%" valign="middle">
+            <span class="maintitle">Sparrow forum</span><br>
+            <span class="gen">A small bulletin board, served by Sparrow<br>&nbsp;</span>
+            <table cellspacing="0" cellpadding="2" border="0">
+              <tr>
+                <td align="center" valign="top" nowrap="nowrap">
+                  <span class="mainmenu">
+                    <a href="/members" class="mainmenu"><img src="/style/images/icon_mini_members.gif" width="12"
+                       height="13" border="0" alt="" hspace="3">Memberlist</a>&nbsp; &nbsp;
+                    {{^logged_in}}
+                    <a href="/register" class="mainmenu"><img src="/style/images/icon_mini_register.gif" width="12"
+                       height="13" border="0" alt="" hspace="3">Register</a>&nbsp; &nbsp;
+                    <a href="/login" class="mainmenu"><img src="/style/images/icon_mini_login.gif" width="12"
+                       height="13" border="0" alt="" hspace="3">Log in</a>
+                    {{/logged_in}}
+                    {{#logged_in}}
+                    <form method="post" action="/logout" class="inline">
+                      <input type="hidden" name="csrf_token" value="{{csrf_token}}">
+                      <button class="mainmenu"><img src="/style/images/icon_mini_login.gif" width="12" height="13"
+                              border="0" alt="" hspace="3">Log out [ {{user_name}} ]</button>
+                    </form>
+                    {{/logged_in}}
+                  </span>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+      <br>
+      {{#flash}}
+      <table width="100%" cellpadding="4" cellspacing="1" border="0" class="forumline">
+        <tr><td class="row1" align="center"><span class="gen" role="status">{{flash}}</span></td></tr>
+      </table>
+      <br>
+      {{/flash}}
+      <table id="live" width="100%" cellpadding="4" cellspacing="1" border="0" class="forumline" hidden>
+        <tr><td class="row1" align="center"><span class="gen"><a href="">New posts have been made. Show them.</a></span></td></tr>
+      </table>

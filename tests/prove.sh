@@ -7,6 +7,7 @@ cd "$(dirname "$0")/.."
 for crate in sparrow_core sparrow_io sparrow_crypto sparrow_json sparrow_jwt sparrow_postgres sparrow_http sparrow_valkey \
              sparrow_client; do
   echo "== $crate"
-  (cd "$crate" && alr -n exec -- gnatprove -P "$crate.gpr" --level=2 --mode=silver -j0 --checks-as-errors=on \
-     --warnings=error --quiet)
+  # Alire writes config/ (which the project file imports) when it builds; generating it is enough here.
+  (cd "$crate" && alr -n build --stop-after=generation >/dev/null \
+     && alr -n exec -- gnatprove -P "$crate.gpr" --level=2 --mode=silver -j0 --checks-as-errors=on --warnings=error --quiet)
 done

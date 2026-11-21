@@ -1,26 +1,86 @@
 {{> top}}
-<p class="back"><a href="/">← All threads</a></p>
-<section class="card">
-  <h1>{{title}}</h1>
-  <ol class="posts" data-watch="{{id}}">
-    {{#posts}}
-      <li id="post-{{post_id}}">
-        <div class="meta"><strong>{{author}}</strong> · {{written}}</div>
-        <div class="body">{{body}}</div>
-      </li>
-    {{/posts}}
-  </ol>
-</section>
+<table width="100%" cellspacing="2" cellpadding="2" border="0">
+  <tr>
+    <td align="left" valign="bottom" colspan="2">
+      <a class="maintitle" href="/threads/{{id}}">{{title}}</a><br>&nbsp;
+    </td>
+  </tr>
+</table>
+<table width="100%" cellspacing="2" cellpadding="2" border="0">
+  <tr>
+    <td align="left" valign="bottom" nowrap="nowrap">
+      {{#logged_in}}<a href="#reply"><img src="/style/images/lang_english/reply.gif" border="0"
+         alt="Reply to topic" align="middle"></a>{{/logged_in}}
+    </td>
+    <td align="left" valign="middle" width="100%">
+      <span class="nav">&nbsp;&nbsp;&nbsp;<a href="/" class="nav">Sparrow forum Forum Index</a> -&gt;
+        <a href="/boards/{{board_id}}" class="nav">{{board_name}}</a></span>
+    </td>
+    <td align="right" valign="bottom" nowrap="nowrap">{{> pages}}</td>
+  </tr>
+</table>
+
+<table class="forumline" width="100%" cellspacing="1" cellpadding="3" border="0" data-watch="{{id}}">
+  <tr>
+    <th class="thLeft" width="150" height="26" nowrap="nowrap">Author</th>
+    <th class="thRight" nowrap="nowrap">Message</th>
+  </tr>
+  {{#posts}}
+  <tr>
+    <td width="150" align="left" valign="top" class="{{row_class}}">
+      <span class="name"><a id="post-{{post_id}}"></a><b>{{author}}</b></span><br>
+      <span class="postdetails">{{rank}}<br><br>Joined: {{joined}}<br>Posts: {{author_posts}}</span><br>
+    </td>
+    <td class="{{row_class}}" width="100%" height="28" valign="top">
+      <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+          <td width="100%"><a href="#post-{{post_id}}"><img src="/style/images/icon_minipost.gif" width="12" height="9"
+              alt="Post" border="0"></a><span class="postdetails">Posted: {{written}}&nbsp; &nbsp;Post subject:
+              {{subject}}</span></td>
+          <td valign="top" nowrap="nowrap">
+            {{#logged_in}}<a href="/threads/{{id}}?page={{page}}&amp;quote={{post_id}}#reply"><img
+               src="/style/images/lang_english/icon_quote.gif" alt="Reply with quote" border="0"></a>{{/logged_in}}
+          </td>
+        </tr>
+        <tr><td colspan="2"><hr></td></tr>
+        <tr><td colspan="2"><span class="postbody">{{{body_html}}}</span></td></tr>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td class="spaceRow" colspan="2" height="1"><img src="/style/images/spacer.gif" alt="" width="1" height="1"></td>
+  </tr>
+  {{/posts}}
+  <tr><td class="catBottom" colspan="2" height="28">&nbsp;</td></tr>
+</table>
+<table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
+  <tr><td align="right" valign="top" nowrap="nowrap">{{> pages}}</td></tr>
+</table>
+<br>
+
 {{#logged_in}}
-<section class="card">
-  <h2>Reply</h2>
-  {{#error}}<p class="error" role="alert">{{error}}</p>{{/error}}
-  <form method="post" action="/threads/{{id}}/replies" class="stack">
-    <input type="hidden" name="csrf_token" value="{{csrf_token}}">
-    <textarea name="body" rows="4" maxlength="10000" required>{{draft}}</textarea>
-    <button>Post reply</button>
-  </form>
-</section>
+<form method="post" action="/threads/{{id}}/replies" id="reply">
+  <input type="hidden" name="csrf_token" value="{{csrf_token}}">
+  <table border="0" cellpadding="3" cellspacing="1" width="100%" class="forumline">
+    <tr><th class="thHead" colspan="2" height="25"><b>Post a reply</b></th></tr>
+    {{#error}}
+    <tr><td class="row3" colspan="2" align="center"><span class="gen error" role="alert">{{error}}</span></td></tr>
+    {{/error}}
+    <tr>
+      <td class="row1" width="22%" valign="top"><span class="gen"><b>Message body</b></span><br>
+        <span class="gensmall">BBCode is <b>on</b>: [b] [i] [u] [quote] [code] [url]</span></td>
+      <td class="row2" width="78%"><textarea name="body" rows="10" cols="35" maxlength="10000" class="post"
+          required>{{draft}}</textarea></td>
+    </tr>
+    <tr>
+      <td class="catBottom" colspan="2" align="center" height="28">
+        <input type="submit" class="mainoption" value="Submit">
+      </td>
+    </tr>
+  </table>
+</form>
 {{/logged_in}}
-{{^logged_in}}<p class="hint"><a href="/login">Log in</a> to reply.</p>{{/logged_in}}
+{{^logged_in}}
+<p align="center"><span class="gensmall"><a href="/login">Log in</a> to reply.</span></p>
+{{/logged_in}}
 {{> bottom}}

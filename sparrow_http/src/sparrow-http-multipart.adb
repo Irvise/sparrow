@@ -35,10 +35,14 @@ package body Sparrow.Http.Multipart is
    end Part_Of;
 
    --  The same part with Content.
-   function With_Content (Item : Part; Content : String) return Part is
-     (Name_Length => Item.Name_Length, File_Length => Item.File_Length, Type_Length => Item.Type_Length,
-      Content_Length => Content'Length, Path_Length => 0, Name => Item.Name, File_Name => Item.File_Name,
-      Content_Type => Item.Content_Type, Content => Content, Path => "", Size => Content'Length);
+   function With_Content (Item : Part; Data : String) return Part is
+      --  Slid to 1 first: GNAT 13 and 14 fail a length check on the aggregate given Data as it comes.
+      Text : constant String (1 .. Data'Length) := Data;
+   begin
+      return (Name_Length => Item.Name_Length, File_Length => Item.File_Length, Type_Length => Item.Type_Length,
+              Content_Length => Text'Length, Path_Length => 0, Name => Item.Name, File_Name => Item.File_Name,
+              Content_Type => Item.Content_Type, Content => Text, Path => "", Size => Text'Length);
+   end With_Content;
 
    procedure Parse (Request : Requests.Request; Into : out Form; Valid : out Boolean) is
       Media    : constant String := Requests.Header (Request, "Content-Type");

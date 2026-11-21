@@ -1,0 +1,3 @@
+# Text files keep LF line endings on every system: tests compare files byte for byte, templates included.
+* text=auto eol=lf
+*.pem text eol=lf

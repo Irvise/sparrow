@@ -1,0 +1,27 @@
+{{> top}}
+<table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
+  <tr><td align="left"><span class="nav"><a href="/" class="nav">Sparrow forum Forum Index</a> -&gt;
+    <a href="/members" class="nav">Memberlist</a></span></td></tr>
+</table>
+<table width="100%" cellpadding="3" cellspacing="1" border="0" class="forumline">
+  <tr>
+    <th height="25" class="thCornerL" nowrap="nowrap">Username</th>
+    <th class="thTop" nowrap="nowrap">Rank</th>
+    <th class="thTop" nowrap="nowrap">Joined</th>
+    <th class="thCornerR" nowrap="nowrap">Posts</th>
+  </tr>
+  {{#members}}
+  <tr>
+    <td class="row1" align="center"><span class="gen"><b>{{name}}</b></span></td>
+    <td class="row2" align="center"><span class="gensmall">{{rank}}</span></td>
+    <td class="row1" align="center" valign="middle"><span class="gensmall">{{joined}}</span></td>
+    <td class="row2" align="center" valign="middle"><span class="gen">{{posts}}</span></td>
+  </tr>
+  {{/members}}
+  {{^members}}
+  <tr><td class="row1" colspan="4" align="center"><span class="gen">No one has registered yet.</span></td></tr>
+  {{/members}}
+  <tr><td class="catBottom" colspan="4" height="28">&nbsp;</td></tr>
+</table>
+<br>
+{{> bottom}}
