@@ -99,6 +99,8 @@ jobs:
     name: SPARK proof
     runs-on: ubuntu-24.04
     timeout-minutes: 60
+    env:
+      GNATPROVE_VERSION: 16.1.0   # the cache key; raise it to take a newer gnatprove
     steps:
       - uses: actions/checkout@v4
 
@@ -111,9 +113,18 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libssl-dev libpq-dev libsqlite3-dev
 
+      - name: Cached gnatprove
+        id: gnatprove-cache
+        uses: actions/cache@v5
+        with:
+          path: ~/.alire
+          key: gnatprove-${{ runner.os }}-${{ runner.arch }}-${{ env.GNATPROVE_VERSION }}
+
       - name: gnatprove
         run: |
-          alr -n install gnatprove
+          if [ "${{ steps.gnatprove-cache.outputs.cache-hit }}" != "true" ]; then
+            alr -n install "gnatprove=$GNATPROVE_VERSION"
+          fi
           echo "$HOME/.alire/bin" >> "$GITHUB_PATH"
 
       - name: Prove
