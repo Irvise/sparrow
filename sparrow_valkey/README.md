@@ -7,7 +7,7 @@ not depend on `sparrow_http`: a worker that only uses Valkey as a cache or queue
 
 ```toml
 [[depends-on]]
-sparrow_valkey = "~0.1.0-dev"
+sparrow_valkey = "~1.0.0"
 ```
 
 ## Sessions in Valkey

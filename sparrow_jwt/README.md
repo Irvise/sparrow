@@ -7,7 +7,7 @@ malformed, makes `Verify` raise.
 
 ```toml
 [[depends-on]]
-sparrow_jwt = "~0.1.0-dev"
+sparrow_jwt = "~1.0.0"
 ```
 
 ```ada

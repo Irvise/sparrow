@@ -13,9 +13,8 @@ together.
 ## Each release
 
 1. **Version.** Set `version` in every `sparrow_*/alire.toml` and in `tests/`, `tests/fuzz/` and `examples/`.
-   Set the sibling dependencies (`sparrow_core = "~0.1.0-dev"` and so on) to the new version.
+   Set the sibling dependencies (`sparrow_core = "~1.0.0"` and so on) to the new version.
 2. **Changelog.** Date the `Unreleased` section of `CHANGELOG.md` with the version and open a new, empty one.
-   0.1.0 is the first entry: there is no history before it.
 3. **Checks**, all green:
    - `tests/run.sh`, with `tests/postgres_server.sh` running
    - `tests/prove.sh`

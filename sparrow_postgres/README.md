@@ -6,7 +6,7 @@ pipelining. The value decoders (`Sparrow.Postgres_Wire`) are proved free of run-
 
 ```toml
 [[depends-on]]
-sparrow_postgres = "~0.1.0-dev"
+sparrow_postgres = "~1.0.0"
 ```
 
 A program built against an older libpq refuses to start and says what to update.

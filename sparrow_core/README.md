@@ -6,7 +6,7 @@ dependencies; everything but `Migrations` and `Stores` is proved free of run-tim
 
 ```toml
 [[depends-on]]
-sparrow_core = "~0.1.0-dev"
+sparrow_core = "~1.0.0"
 ```
 
 ## Packages

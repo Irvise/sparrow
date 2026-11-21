@@ -15,7 +15,7 @@ proved code can call them; the bodies are thin system calls. Nothing here raises
 
 ```toml
 [[depends-on]]
-sparrow_io = "~0.1.0-dev"
+sparrow_io = "~1.0.0"
 ```
 
 ## Packages

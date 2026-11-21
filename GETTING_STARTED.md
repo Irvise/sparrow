@@ -65,24 +65,6 @@ Then add the web server crate:
 alr with sparrow_http
 ```
 
-> **Before 0.1.0 is published,** the crates are not in Alire's index yet. Clone the repository next to your
-> crate (`git clone https://github.com/michael-hardeman/sparrow`) and add this to `alire.toml` instead of
-> `alr with`. Alire does not follow a pinned crate's own pins, so each Sparrow crate it needs is pinned here:
->
-> ```toml
-> [[depends-on]]
-> sparrow_http = "~0.1.0-dev"
->
-> [[pins]]
-> sparrow_http   = { path = "../sparrow/sparrow_http" }
-> sparrow_core   = { path = "../sparrow/sparrow_core" }
-> sparrow_io     = { path = "../sparrow/sparrow_io" }
-> sparrow_crypto = { path = "../sparrow/sparrow_crypto" }
-> sparrow_json   = { path = "../sparrow/sparrow_json" }
-> ```
->
-> Run `alr update` after editing the manifest by hand.
-
 ## 5. Write the server
 
 A handler is a procedure that reads the request and fills in the response. It lives in a package, not inside

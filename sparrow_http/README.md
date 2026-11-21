@@ -6,7 +6,7 @@ ids with W3C trace context, and an access log.
 
 ```toml
 [[depends-on]]
-sparrow_http = "~0.1.0-dev"
+sparrow_http = "~1.0.0"
 ```
 
 ## A server

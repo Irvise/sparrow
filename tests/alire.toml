@@ -1,6 +1,6 @@
 name = "sparrow_tests"
 description = "Tests for the Sparrow crates"
-version = "0.1.0-dev"
+version = "1.0.0"
 
 authors = ["Michael Hardeman"]
 maintainers = ["Michael Hardeman <michael.hardeman@protonmail.com>"]
@@ -12,19 +12,19 @@ licenses = "MIT"
 "*".style_checks = ["-gnatyM120"]
 
 [[depends-on]]
-sparrow_core = "~0.1.0-dev"
-sparrow_crypto = "~0.1.0-dev"
-sparrow_client = "~0.1.0-dev"
-sparrow_json = "~0.1.0-dev"
-sparrow_jwt = "~0.1.0-dev"
-sparrow_io = "~0.1.0-dev"
-sparrow_postgres = "~0.1.0-dev"
-sparrow_http = "~0.1.0-dev"
-sparrow_sqlite = "~0.1.0-dev"
-sparrow_templates = "~0.1.0-dev"
-sparrow_open_telemetry = "~0.1.0-dev"
-sparrow_valkey = "~0.1.0-dev"
-sparrow_s3 = "~0.1.0-dev"
+sparrow_core = "~1.0.0"
+sparrow_crypto = "~1.0.0"
+sparrow_client = "~1.0.0"
+sparrow_json = "~1.0.0"
+sparrow_jwt = "~1.0.0"
+sparrow_io = "~1.0.0"
+sparrow_postgres = "~1.0.0"
+sparrow_http = "~1.0.0"
+sparrow_sqlite = "~1.0.0"
+sparrow_templates = "~1.0.0"
+sparrow_open_telemetry = "~1.0.0"
+sparrow_valkey = "~1.0.0"
+sparrow_s3 = "~1.0.0"
 
 [[pins]]
 sparrow_core = { path = "../sparrow_core" }

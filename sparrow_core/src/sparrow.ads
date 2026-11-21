@@ -12,7 +12,7 @@
 
 package Sparrow with Pure, SPARK_Mode is
 
-   Version : constant String := "0.1.0-dev";
+   Version : constant String := "1.0.0";
 
    --  Well-formed UTF-8. Literals, slices, "&" and comparisons work as for String; a slice is taken by bytes,
    --  so cut only at character boundaries.

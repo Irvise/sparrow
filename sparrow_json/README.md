@@ -5,7 +5,7 @@ run-time errors (SPARK silver): no input makes them raise, read out of bounds or
 
 ```toml
 [[depends-on]]
-sparrow_json = "~0.1.0-dev"
+sparrow_json = "~1.0.0"
 ```
 
 ## Reading

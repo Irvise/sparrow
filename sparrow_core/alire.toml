@@ -1,6 +1,6 @@
 name = "sparrow_core"
 description = "Sparrow web stack: byte buffers, text and time formats, Base64"
-version = "0.1.0-dev"
+version = "1.0.0"
 
 authors = ["Michael Hardeman"]
 maintainers = ["Michael Hardeman <michael.hardeman@protonmail.com>"]
