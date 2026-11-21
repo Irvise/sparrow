@@ -6,7 +6,7 @@ without your server in the middle.
 
 ```toml
 [[depends-on]]
-sparrow_s3 = "~0.1.0-dev"
+sparrow_s3 = "~1.0.0"
 ```
 
 ```ada

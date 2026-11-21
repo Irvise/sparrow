@@ -6,7 +6,7 @@ A program built against an older OpenSSL refuses to start and says what to updat
 
 ```toml
 [[depends-on]]
-sparrow_crypto = "~0.1.0-dev"
+sparrow_crypto = "~1.0.0"
 ```
 
 Keys, digests, signatures and ciphertexts are bytes (`String`), indexed from 1.

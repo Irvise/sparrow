@@ -5,7 +5,7 @@ them on to Jaeger, Tempo, Honeycomb, Datadog or any other tracing backend.
 
 ```toml
 [[depends-on]]
-sparrow_open_telemetry = "~0.1.0-dev"
+sparrow_open_telemetry = "~1.0.0"
 ```
 
 ```ada

@@ -1,6 +1,6 @@
 name = "sparrow_json"
 description = "Sparrow web stack: allocation-free JSON reader and streaming writer"
-version = "0.1.0-dev"
+version = "1.0.0"
 
 authors = ["Michael Hardeman"]
 maintainers = ["Michael Hardeman <michael.hardeman@protonmail.com>"]
@@ -21,9 +21,9 @@ freebsd = true
 "*".style_checks = ["-gnatyM120"]
 
 [[depends-on]]
-sparrow_core = "~0.1.0-dev"
+sparrow_core = "~1.0.0"
 
-# Until the crates are published, siblings are taken from this repository.
+# For development, siblings are taken from this repository.
 [[pins]]
 sparrow_core = { path = "../sparrow_core" }
 

@@ -5,7 +5,7 @@ from a handler: OAuth token endpoints, payment providers, webhooks, APIs.
 
 ```toml
 [[depends-on]]
-sparrow_client = "~0.1.0-dev"
+sparrow_client = "~1.0.0"
 ```
 
 ```ada

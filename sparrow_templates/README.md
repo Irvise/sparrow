@@ -5,7 +5,7 @@ response's content).
 
 ```toml
 [[depends-on]]
-sparrow_templates = "~0.1.0-dev"
+sparrow_templates = "~1.0.0"
 ```
 
 | Syntax | Meaning |

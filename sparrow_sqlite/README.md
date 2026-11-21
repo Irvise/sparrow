@@ -5,7 +5,7 @@ themselves when they go out of scope, so a handler that raises leaks nothing.
 
 ```toml
 [[depends-on]]
-sparrow_sqlite = "~0.1.0-dev"
+sparrow_sqlite = "~1.0.0"
 ```
 
 ```ada
