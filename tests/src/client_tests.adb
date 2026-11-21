@@ -134,11 +134,12 @@ procedure Client_Tests is
       Total    : Positive;
       Seen     : Unbounded_String;
    begin
+      --  Listening before Start returns, so the caller's client cannot connect first.
       accept Start (Answers : Answer_List; Count : Positive) do
          Script := Answers;
          Total  := Count;
+         Open_Listener (Loopback, Script_Port, Listener, Failure, Share_Port => False);
       end Start;
-      Open_Listener (Loopback, Script_Port, Listener, Failure, Share_Port => False);
       for Turn in 1 .. Total loop
          declare
             Socket   : Descriptor := No_Descriptor;

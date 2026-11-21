@@ -95,10 +95,27 @@ jobs:
       - uses: actions/checkout@v4
       - run: python3 design/check.py   # design/rules.toml; see design/README.md
 
+  proved-crates:
+    name: SPARK proof crates
+    runs-on: ubuntu-24.04
+    outputs:
+      crates: ${{ steps.list.outputs.crates }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: list
+        run: echo "crates=$(tests/prove.sh --list)" >> "$GITHUB_OUTPUT"
+
   prove:
-    name: SPARK proof
+    name: SPARK proof (${{ matrix.crate }})
+    needs: proved-crates
     runs-on: ubuntu-24.04
     timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        crate: ${{ fromJSON(needs.proved-crates.outputs.crates) }}
+    env:
+      GNATPROVE_VERSION: 16.1.0   # the cache key; raise it to take a newer gnatprove
     steps:
       - uses: actions/checkout@v4
 
@@ -111,13 +128,22 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libssl-dev libpq-dev libsqlite3-dev
 
+      - name: Cached gnatprove
+        id: gnatprove-cache
+        uses: actions/cache@v5
+        with:
+          path: ~/.alire
+          key: gnatprove-${{ runner.os }}-${{ runner.arch }}-${{ env.GNATPROVE_VERSION }}
+
       - name: gnatprove
         run: |
-          alr -n install gnatprove
+          if [ "${{ steps.gnatprove-cache.outputs.cache-hit }}" != "true" ]; then
+            alr -n install "gnatprove=$GNATPROVE_VERSION"
+          fi
           echo "$HOME/.alire/bin" >> "$GITHUB_PATH"
 
       - name: Prove
-        run: tests/prove.sh
+        run: tests/prove.sh "${{ matrix.crate }}"
 
   races:
     name: ThreadSanitizer
