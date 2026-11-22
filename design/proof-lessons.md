@@ -64,11 +64,15 @@ This is not a decision record; it records what worked, so the next proof change 
   unit is hard to remove, first check whether its spec lacks contracts — adding them may let callers
   become SPARK even while the implementation stays Off.
 
-- `Requests.Json_Body` (spec and body Off): enabling it fails SPARK legality with `subtype constraint cannot
-  depend on variable input "Nodes"` (E0007) — the `Document` discriminant is computed from the input. Using
-  the maximum discriminant would allocate about a million nodes per call. Keep Off.
+- `Requests.Json_Body`: enabling it fails SPARK legality with `subtype constraint cannot depend on variable
+  input "Nodes"` (E0007) — the `Document` discriminant is computed from the input. Using the maximum
+  discriminant would allocate about a million nodes per call. **Fixed differently**: keep only the allocation
+  Off (with a `Post`), and move the node count and the parse into proved SPARK helpers that work on the
+  already-allocated document. The hostile-byte work is now proved.
 - `Http.Compression.Contains_Folded`: was Off for an underflowing loop bound. **Fixed**: added
   `if Part'Length > Text'Length then return False`, removed the Off, and the whole function now proves.
+  An empty `Part` must return True (as the old loop did), and the slice end is written `Start + (Part'Length - 1)`
+  so the index addition cannot overflow.
 - `Http.Compression.Apply`: enabling it fails on `Compression.Pool` (Off, access type) and on an
   uninitialized allocator in `Apply` itself (E0019). Calling Off code is *not* by itself a blocker:
   SPARK code may call a subprogram whose body is `SPARK_Mode => Off` as long as its declaration carries
@@ -87,3 +91,27 @@ This is not a decision record; it records what worked, so the next proof change 
   `pragma SPARK_Mode (Off)` or a subprogram aspect inside a proved unit is not detected, even though
   decision 0004 says every check in those units is proved.
 - `SECURITY.md` still says "Sparrow is before 1.0" while the release is 1.0.0.
+
+## Enabling SPARK and contracting the remaining Offs
+
+- A package spec can be SPARK while its private part and body stay Off. `Public_Keys` needs the private part
+  Off because a `System.Address` handle inside a controlled type hits E0003 (freezing point before `Adjust`);
+  `Key_Sets` needs it for `Ada.Containers.Vectors`/`Unbounded_String` (E0005) and heap allocation. Putting the
+  Off on the private part keeps every visible declaration under proof.
+- Contracts on an Off body are **assumptions**, not checks. Check them by hand against the body; a wrong one
+  can make callers unsound. The crypto key builders, `Key_Sets.Add`/`Key_Id_Of`/`Parse_Jwks`, the DB row
+  accessors and the reader's neutral values were each checked against their implementations after adding
+  contracts. `Apply`'s `Post` repeats the `Eligible` decision without calling it — if `Apply` changes, the
+  contract must be updated too.
+- GNATprove generates **coarse** globals for non-SPARK bodies and warns that they can be wrong (access types,
+  `__HEAP`). Write explicit `Global`, `Pre` and `Post` on Off declarations instead of relying on generation.
+- `--proof-warnings=on` is the documented way to look for inconsistent contracts on non-SPARK bodies: it
+  reports unreachable branches in their SPARK callers. On this tree it only reported genuinely dead defensive
+  returns (`Deflate` and `Postgres_Wire.Element`), not inconsistent new contracts.
+- SPARK assumes `'Valid` is always true (and that Off functions terminate). `Postgres_Wire.Float_Value`
+  therefore states "not finite" as the equivalent IEEE exponent-bit test (`Finite_4`/`Finite_8`), while the
+  Off body keeps the `'Valid` check. Both must stay in step.
+- For proofs over bounded numeric parameters, a small constant table can be easier than exponentiation:
+  `Passwords.Parse` uses a 24-entry `Powers` table for `2 ** scrypt_log_n` (verified equal for log N in 1..24).
+- Changing a spec to SPARK can change downstream proofs. After such a change, prove **all** crates again, not
+  just the one edited.
