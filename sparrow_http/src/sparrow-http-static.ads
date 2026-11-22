@@ -38,7 +38,17 @@ package Sparrow.Http.Static with SPARK_Mode is
       Root     : String;
       Relative : String;
       Max_Age  : Natural := 0)
-      with SPARK_Mode => Off;
+      with SPARK_Mode => Off,
+           Pre  => Responses.Valid (Response),
+           Post => Responses.Valid (Response)
+                   and then
+                     (if ((Relative'Length = 0 or else Relative (Relative'Last) = '/')
+                          and then Relative'Last < Positive'Last
+                          and then not Is_Safe_Path (Relative & "index.html"))
+                       or else (Relative'Length > 0
+                                and then Relative (Relative'Last) /= '/'
+                                and then not Is_Safe_Path (Relative))
+                      then Response.Status = Not_Found);
 
    --  Largest file served whole; past it, 404 (stream big files from a CDN or a front proxy). Larger files are
    --  still served in ranges, up to this many bytes per response.
@@ -47,9 +57,19 @@ package Sparrow.Http.Static with SPARK_Mode is
    package Routes with SPARK_Mode => Off is
       --  A folder as a route's handler: Serve_File with the route's "*" capture as Relative.
       type Folder_Route is new Routers.Route_Handler with private;
+
+      --  The cache lifetime a route was made with.
+      function Max_Age_Of (This : Folder_Route) return Natural
+         with SPARK_Mode => Off, Post => Max_Age_Of'Result >= 0;
+
       overriding procedure Handle
-        (This : Folder_Route; Request : Requests.Request; Response : in out Responses.Response);
-      function Make (Root : String; Capture : String; Max_Age : Natural) return Folder_Route;
+        (This : Folder_Route; Request : Requests.Request; Response : in out Responses.Response)
+        with SPARK_Mode => Off,
+             Pre  => Responses.Valid (Response),
+             Post => Responses.Valid (Response);
+
+      function Make (Root : String; Capture : String; Max_Age : Natural) return Folder_Route
+         with SPARK_Mode => Off, Post => Max_Age_Of (Make'Result) = Max_Age;
    private
       type Folder_Route is new Routers.Route_Handler with record
          Root    : Sparrow.Buffers.String_Access;
@@ -61,6 +81,6 @@ package Sparrow.Http.Static with SPARK_Mode is
    --  Root: the folder, absolute or relative to the working directory. Capture: the name of the route's "*"
    --  capture.
    function Folder (Root : String; Capture : String := "file"; Max_Age : Natural := 0) return Routes.Folder_Route
-      with SPARK_Mode => Off;
+      with SPARK_Mode => Off, Post => Routes.Max_Age_Of (Folder'Result) = Max_Age;
 
 end Sparrow.Http.Static;

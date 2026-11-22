@@ -266,6 +266,8 @@ package body Sparrow.Http.Static with SPARK_Mode is
 
    package body Routes with SPARK_Mode => Off is
 
+      function Max_Age_Of (This : Folder_Route) return Natural is (This.Max_Age);
+
       overriding procedure Handle
         (This : Folder_Route; Request : Requests.Request; Response : in out Responses.Response)
       is begin

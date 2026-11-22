@@ -5,6 +5,8 @@ with Sparrow.Http.Compression.Pool; use Sparrow.Http.Compression.Pool;
 
 package body Sparrow.Http.Compression with SPARK_Mode is
 
+   use type Responses.Response_Mode;
+
    function Lower (Item : Character) return Character is
      (if Item in 'A' .. 'Z' then Character'Val (Character'Pos (Item) + 32) else Item);
 
@@ -158,16 +160,30 @@ package body Sparrow.Http.Compression with SPARK_Mode is
 
    function Contains_Folded (Text, Part : String) return Boolean is
    begin
+      --  An empty part matches everywhere; the bound below would overflow at Text'Last = Integer'Last.
+      if Part'Length = 0 then
+         return True;
+      end if;
       if Part'Length > Text'Length then
          return False;
       end if;
       for Start in Text'First .. Text'Last - Part'Length + 1 loop
-         if Encoding.Equal_Ignoring_Case (Text (Start .. Start + Part'Length - 1), Part) then
+         if Encoding.Equal_Ignoring_Case (Text (Start .. Start + (Part'Length - 1)), Part) then
             return True;
          end if;
       end loop;
       return False;
    end Contains_Folded;
+
+   function Eligible (Request : Requests.Request; Response : Responses.Response) return Boolean is
+     (Response.Mode = Responses.Whole
+      and then Response.Status in 200 .. 299
+      and then Response.Status not in No_Content | Partial_Content
+      and then Response.Content.Length >= Minimum_Length
+      and then Compressible (Responses.Header (Response, "Content-Type"))
+      and then Responses.Header (Response, "Content-Encoding") = ""
+      and then not Contains_Folded (Responses.Header (Response, "Cache-Control"), "no-transform")
+      and then Accepts_Gzip (Requests.Header (Request, "Accept-Encoding")));
 
    procedure Apply (Request : Requests.Request; Response : in out Responses.Response) with SPARK_Mode => Off is
       Length : constant Natural := Response.Content.Length;
