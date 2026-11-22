@@ -156,8 +156,11 @@ package body Sparrow.Http.Compression with SPARK_Mode is
       end;
    end Compressible;
 
-   function Contains_Folded (Text, Part : String) return Boolean with SPARK_Mode => Off is
+   function Contains_Folded (Text, Part : String) return Boolean is
    begin
+      if Part'Length > Text'Length then
+         return False;
+      end if;
       for Start in Text'First .. Text'Last - Part'Length + 1 loop
          if Encoding.Equal_Ignoring_Case (Text (Start .. Start + Part'Length - 1), Part) then
             return True;
