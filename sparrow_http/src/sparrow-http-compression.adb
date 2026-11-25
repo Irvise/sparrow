@@ -189,12 +189,7 @@ package body Sparrow.Http.Compression with SPARK_Mode is
       Length : constant Natural := Response.Content.Length;
    begin
       --  The cheap tests first: most responses stop here.
-      if Response.Mode not in Responses.Whole or else Response.Status not in 200 .. 299
-        or else Response.Status in No_Content | Partial_Content or else Length < Minimum_Length
-        or else not Compressible (Responses.Header (Response, "Content-Type"))
-        or else Responses.Header (Response, "Content-Encoding") /= ""
-        or else Contains_Folded (Responses.Header (Response, "Cache-Control"), "no-transform")
-      then
+      if not Eligible (Request, Response) then
          return;
       end if;
 
@@ -208,10 +203,6 @@ package body Sparrow.Http.Compression with SPARK_Mode is
             Responses.Set_Header (Response, "Vary", Vary & ", Accept-Encoding");
          end if;
       end;
-      if not Accepts_Gzip (Requests.Header (Request, "Accept-Encoding")) then
-         return;
-      end if;
-
       declare
          Item    : Compressor_Access;
          Last    : Natural;

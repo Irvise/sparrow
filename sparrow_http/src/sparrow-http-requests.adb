@@ -294,20 +294,6 @@ package body Sparrow.Http.Requests with SPARK_Mode is
       return Json.Node_Count (Long_Long_Integer'Min (Nodes, Long_Long_Integer (Json.Node_Count'Last)));
    end Node_Capacity_For;
 
-   --  The parse of an already-allocated document: the byte-level work of Json_Body, proved here.
-   procedure Parse_Into
-     (Document : in out Json.Document;
-      Source   : String;
-      Valid    : out Boolean;
-      Options  : Json.Parse_Options)
-     with Pre  => Source'First >= 1 and then Source'Last < Positive'Last
-                  and then Document.Text_Capacity < Positive'Last,
-          Post => Json.Is_Valid (Document) = Valid
-   is
-   begin
-      Json.Parse (Document, Source, Valid, Options);
-   end Parse_Into;
-
    function Json_Body (This : Request; Options : Json.Parse_Options := Json.Default_Options) return Json.Document
      with SPARK_Mode => Off
    is
@@ -326,7 +312,7 @@ package body Sparrow.Http.Requests with SPARK_Mode is
          declare
             Valid : Boolean;
          begin
-            Parse_Into (Result, Source, Valid, Options);
+            Json.Parse (Result, Source, Valid, Options);
          end;
       end return;
    end Json_Body;

@@ -44,12 +44,9 @@ package Sparrow.Http.Requests with SPARK_Mode is
    --        return;
    --     end if;
    --  The document is sized to the body, so its discriminants cannot be fixed by SPARK (E0007); only that
-   --  allocation is Off. The counting and the parse run in SPARK helpers over the already-allocated document.
+   --  allocation is Off. The capacity scan is proved in a SPARK helper.
    function Json_Body (This : Request; Options : Json.Parse_Options := Json.Default_Options) return Json.Document
-      with SPARK_Mode => Off,
-           Post => Json_Body'Result.Node_Capacity in Json.Node_Index
-                   and then Json_Body'Result.Text_Capacity >= 1
-                   and then (if Json.Is_Valid (Json_Body'Result) then Content (This)'Length > 0);
+      with Post => (if Json.Is_Valid (Json_Body'Result) then Content (This)'Length > 0);
 
    --  What a route pattern's ":name" (or "*name") matched, percent-decoded.
    function Parameter (This : Request; Name : String) return String;

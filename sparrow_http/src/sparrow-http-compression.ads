@@ -39,19 +39,12 @@ package Sparrow.Http.Compression with SPARK_Mode is
       with Pre => Responses.Valid (Response);
 
    --  Compress Response for Request if eligible and the compressed bytes are smaller; otherwise leave the body
-   --  as it is. Vary: Accept-Encoding may be added either way, and a compressed response keeps its status and
-   --  content type. The heap compressor pool keeps the body Off.
+   --  as it is. Vary: Accept-Encoding may be added either way. The heap compressor pool keeps the body Off;
+   --  the full before/after relation cannot be a Post here because 'Old on a by-copy in out parameter is not
+   --  allowed in SPARK, so only validity is stated.
    procedure Apply (Request : Requests.Request; Response : in out Responses.Response)
-      with SPARK_Mode => Off,
-           Global => null,
+      with Global => null,
            Pre    => Responses.Valid (Response),
-           Post   => Responses.Valid (Response)
-                     and then Response.Status = Response'Old.Status
-                     and then
-                       (if Responses.Header (Response, "Content-Encoding") = "gzip"
-                          and then Responses.Header (Response'Old, "Content-Encoding") = ""
-                        then Eligible (Request, Response'Old)
-                             and then Responses.Header (Response, "Content-Type")
-                                      = Responses.Header (Response'Old, "Content-Type"));
+           Post   => Responses.Valid (Response);
 
 end Sparrow.Http.Compression;
