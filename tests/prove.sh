@@ -26,6 +26,6 @@ for crate in "${chosen[@]}"; do
   echo "== $crate"
   # Alire writes config/ (which the project file imports) when it builds; generating it is enough here.
   (cd "$crate" && alr -n build --stop-after=generation >/dev/null \
-     && alr -n exec -- gnatprove -P "$crate.gpr" --level=4 --prover=cvc5,z3 --timeout=10 -j6 --mode=silver \
-          --checks-as-errors=on --warnings=error --quiet)
+     && alr -n exec -- gnatprove -P "$crate.gpr" --level=4 --prover=cvc5,z3 --steps=200000 --timeout=300 -j0 \
+          --mode=silver --checks-as-errors=on --warnings=error --quiet)
 done

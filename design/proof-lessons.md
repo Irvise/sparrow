@@ -35,6 +35,9 @@ Durable techniques for working on the SPARK proofs. Not a decision record; archi
 
 ## Process
 
+- Prefer `--steps` over `--timeout` for reproducible results: wall-clock limits change with machine load,
+  step limits do not. Keep a generous timeout only as a safety cap, and set the step limit well above the
+  largest step count in the proof session files.
 - Prove all crates after changing a spec or prover settings: a prover that succeeds on small crates may be
   needed by one check in a large one. `tests/prove.sh` stops at the first failing crate.
 - Use `gnatprove --clean` before a full run; session files can hide a check that only another prover solved.
