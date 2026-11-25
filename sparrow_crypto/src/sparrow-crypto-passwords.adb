@@ -11,12 +11,13 @@ package body Sparrow.Crypto.Passwords with SPARK_Mode is
    function Prefix_Of (Kind : Algorithm) return String is
      (case Kind is when Argon2id => Argon2_Prefix, when Scrypt => Scrypt_Prefix);
 
-   function Separator_Of (Kind : Algorithm; Index : Positive) return String is
+   subtype Separator_Index is Positive range 1 .. 3;
+
+   function Separator_Of (Kind : Algorithm; Index : Separator_Index) return String is
      (case Index is
-         when 1      => (if Kind = Argon2id then ",t=" else ",r="),
-         when 2      => ",p=",
-         when 3      => "$",
-         when others => "");
+         when 1 => (if Kind = Argon2id then ",t=" else ",r="),
+         when 2 => ",p=",
+         when 3 => "$");
 
    --  Standard Base64 without padding, as the PHC format writes it.
    function Unpadded (Data : String) return String with SPARK_Mode => Off is
@@ -106,7 +107,6 @@ package body Sparrow.Crypto.Passwords with SPARK_Mode is
             After : constant String := Separator_Of (Kind, Index);
             Valid : Boolean;
          begin
-            pragma Assert (After'Length in 1 .. 3);
             while Next <= Stored'Last and then Stored (Next) in '0' .. '9' loop
                pragma Loop_Invariant (Next in First .. Stored'Last + 1);
                pragma Loop_Variant (Increases => Next);
@@ -212,7 +212,7 @@ package body Sparrow.Crypto.Passwords with SPARK_Mode is
    is
       Parts : constant Parsed := Parse (Stored);
    begin
-      if Stored'Length > Max_Stored_Length or else not Parts.Valid or else Parts.Kind /= Preferred then
+      if not Parts.Valid or else Parts.Kind /= Preferred then
          return True;
       end if;
       return (case Parts.Kind is

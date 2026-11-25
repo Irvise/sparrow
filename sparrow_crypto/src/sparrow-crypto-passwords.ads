@@ -97,6 +97,7 @@ private
       end case;
    end record;
 
-   function Parse (Stored : String) return Parsed;
+   function Parse (Stored : String) return Parsed
+     with Post => (if Parse'Result.Valid then Stored'Length <= Max_Stored_Length);
 
 end Sparrow.Crypto.Passwords;

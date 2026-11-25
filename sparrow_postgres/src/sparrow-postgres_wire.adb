@@ -170,7 +170,7 @@ package body Sparrow.Postgres_Wire with SPARK_Mode is
    -- Float_Value --
    -----------------
 
-   function Float_Value (Data : String; Item : Field) return Long_Float with SPARK_Mode => Off is
+   function Float_Value (Data : String; Item : Field) return Long_Float is
    begin
       if not Inside (Data, Item) then
          return 0.0;

@@ -36,6 +36,8 @@ package Sparrow.Jwt.Key_Sets with SPARK_Mode is
    --  The keys of a JWKS that sign: RSA (2048 bits or more), EC P-256 and OKP Ed25519 keys, unless marked
    --  "use": "enc". Others (encryption keys, shared secrets, unknown kinds, weak or malformed keys) are left out,
    --  and an unreadable document gives Empty_Set.
+   --  Global => null states that no program global is touched; the Document allocated by the Off body is local
+   --  (dropping the aspect makes GNATprove generate an output __HEAP global and reject the function, E0005).
    function Parse_Jwks (Text : String) return Key_Set
      with Global => null,
           Post => (if Text'Length = 0 or else Text'Length > Max_Jwks_Length
