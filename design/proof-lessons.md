@@ -1,117 +1,42 @@
-# Proof lessons learned
+# Proof notes
 
-Notes kept while reviewing and tuning the SPARK proofs. Add a line each time a proof problem is solved.
-This is not a decision record; it records what worked, so the next proof change starts from it.
+Durable techniques for working on the SPARK proofs. Not a decision record; architecture rules live in
+`rules.toml` and `decisions/`.
 
-## Toolchain and configuration
+## Boundary rules
 
-- Installed gnatprove is FSF 16.1.0 (cvc5 1.3.2, z3 4.15.4, Alt-Ergo 2.6.1). It accepts `--prover`,
-  `--timeout`, `--steps`, `--level`, `--checks-as-errors` and `--function-sandboxing`. The newer SPARK
-  User's Guide 28.0w also documents `--proof-manifest-dir` and `--sarif-base-uri`, which 16.1.0 has not.
-- `--level=2` means `cvc5,z3,altergo`, 5 s, 1000 MB, counterexamples on; `--level=4` means the same
-  provers, 60 s, 2000 MB, counterexamples on. An explicit `--prover` or `--timeout` overrides the level;
-  explicit `--steps` also removes the default step limit. Keep `--level=4` and override timeout/provers.
-- `--report=provers` prints which prover proved each VC; `--report=statistics` adds time and steps.
-  This is the quickest way to see that a proof depends on a prover we are about to drop.
-- Use `--limit-line=<file>:<line>` for a single failing check; it turns minutes into seconds.
-- `--mode=silver` is the project target (absence of run-time errors). `--checks-as-errors=on` plus
-  `--warnings=error` is what makes an unproved check fail CI.
+- A SPARK declaration may have an `SPARK_Mode => Off` **body**; its callers use the `Pre`/`Post`/`Global` on
+  the declaration. Do not put `SPARK_Mode => Off` on a declaration that carries contracts: the contracts are
+  then ignored. Either move the Off to the body/private part, or drop the contracts.
+- A package spec can be SPARK with an Off private part and body. This keeps the visible declarations under
+  proof; C handles, Ada containers and access types go behind the private part.
+- Contracts on Off bodies are assumptions, not checks. Keep them true by hand, and prefer a SPARK helper
+  over restating a decision in a contract. `--proof-warnings=on` can expose an inconsistent contract through
+  unreachable branches in its SPARK callers, but it is not complete.
+- GNATprove generates coarse globals for non-SPARK bodies; for access types these are `__HEAP` and can be
+  wrong or rejected (E0005 on a function). State the real global effects explicitly instead of relying on
+  generation.
+- GNATprove assumes `'Valid` is true. Express validity in a contract as an equivalent checked condition
+  (for floats, the IEEE exponent bits) and keep the body's `'Valid` test in step with it.
+- `'Old` on a by-copy `in out` parameter is not allowed in a SPARK postcondition. Do not hide an illegal
+  postcondition behind `SPARK_Mode => Off`; simplify it or pass the parameter by reference.
 
-## Provers
+## Proving timingouts
 
-- At `--level=2`, Alt-Ergo proves checks in `sparrow-deflate.adb` (`Find`) that cvc5/z3 cannot prove in
-  5 s. Restricting to cvc5/z3 is therefore a *proof* change, not only a configuration change.
-  Those checks must be re-proved with intermediate assertions, not merely reconfigured.
-
-## Proof-writing techniques that worked
-
-- A check that times out after an `exit when` usually lacks bounds on the loop variable at that point.
-  Put checked `pragma Assert` statements immediately after the exit: they are proved from the negated
-  exit condition and give the provers explicit bounds for the rest of the iteration.
-- For a modular (`Unsigned_32`) value compared with a signed index, neither cvc5 nor z3 connects the
-  modular and integer views reliably. Assert the round trip explicitly
-  (`Unsigned_32 (Natural (X)) = X`) and assert the conversion of the *other* operand first.
-  A single large mixed modular/integer inequality times out; split it into small steps.
-- The SPARK 28.0w guide recommends `Annotate => (GNATprove, No_Bitwise_Operations)` on a modular type
-  when bitvector modeling makes proofs hard, but it forbids bitwise operations on that type, so it
-  cannot be applied blindly to `Unsigned_32` (deflate uses shifts). Use a derived type or assertions.
-
-## Solved problems
-
-- **`Sparrow.Deflate.Find` chain bounds (5 timeouts).** The chain offset (`Unsigned_32`) was compared with
-  string indexes, and cvc5/z3 time out on the mixed modular/integer reasoning. Fix: derive `Chain_Offset`
-  from `Unsigned_32` with `Annotate => (GNATprove, No_Bitwise_Operations)` in the private part of
-  `sparrow-deflate.ads`, use it for `Head_Table`, `Offset`, `Candidate` and the chain step, and add two
-  checked assertions right after the `exit when`: the negated exit condition and `Best <= Input'Last -
-  Position`. Adding only assertions did not work; the type annotation was needed. Removing four bridging
-  assertions afterwards still proved, so keep the minimal set.
-- **`Sparrow.Http.Hpack.Read_Integer` overflow timeout.** `Byte mod 128 * Scale (Step)` is nonlinear
-  (mod expression times an array select). Fix: bind both factors to local constants `Fragment` and
-  `Factor`, assert their individual bounds (`<= 127`, `<= 2 ** 21`), then multiply the constants.
-  Asserting bounds on the original expressions was not enough.
+- A check that times out just after an `exit when` usually lacks bounds on the loop variable at that point.
+  Put checked assertions immediately after the exit: they follow from the negated exit condition and give
+  provers explicit bounds for the rest of the iteration.
+- `Annotate => (GNATprove, No_Bitwise_Operations)` on a modular type makes provers model it as an integer
+  instead of a bit vector. Put it on a derived type if the original needs shifts or `and`/`or`.
+- Nonlinear products with a `mod` expression or an array select are hard: bind the factors to local
+  constants with explicit bound assertions, then multiply the constants.
+- A `pragma Assert` on a symbolic bound such as `2 ** Last` may prove but leave the concrete bound unknown;
+  use explicit constants when the bound must be computed in arithmetic.
 
 ## Process
 
-- When changing prover settings, prove *all* crates: a prover that succeeds on small crates may still be
+- Prove all crates after changing a spec or prover settings: a prover that succeeds on small crates may be
   needed by one check in a large one. `tests/prove.sh` stops at the first failing crate.
-- Validate with `gnatprove --clean` on every crate before a full run; session files can hide a check that
-  only Alt-Ergo can prove. A clean run of all 9 crates with the final flags takes about 7 minutes.
-
-## SPARK_Mode Off: what was tried
-
-- Boundary rule to remember: SPARK code can call SPARK_Mode => Off code if the off declarations have
-  contracts (Pre/Post/Global). The proof uses the contract and never looks into the off body. If an Off
-  unit is hard to remove, first check whether its spec lacks contracts — adding them may let callers
-  become SPARK even while the implementation stays Off.
-
-- `Requests.Json_Body`: enabling it fails SPARK legality with `subtype constraint cannot depend on variable
-  input "Nodes"` (E0007) — the `Document` discriminant is computed from the input. Using the maximum
-  discriminant would allocate about a million nodes per call. **Fixed differently**: keep only the allocation
-  Off (with a `Post`), and move the node count and the parse into proved SPARK helpers that work on the
-  already-allocated document. The hostile-byte work is now proved.
-- `Http.Compression.Contains_Folded`: was Off for an underflowing loop bound. **Fixed**: added
-  `if Part'Length > Text'Length then return False`, removed the Off, and the whole function now proves.
-  An empty `Part` must return True (as the old loop did), and the slice end is written `Start + (Part'Length - 1)`
-  so the index addition cannot overflow.
-- `Http.Compression.Apply`: enabling it fails on `Compression.Pool` (Off, access type) and on an
-  uninitialized allocator in `Apply` itself (E0019). Calling Off code is *not* by itself a blocker:
-  SPARK code may call a subprogram whose body is `SPARK_Mode => Off` as long as its declaration carries
-  contracts (Pre/Post/Global), which the SPARK side then trusts. Crypto works this way: the specs are
-  SPARK with `Post` contracts and the OpenSSL bodies are Off. Here adding contracts to the pool would
-  not fix the heap allocator in `Apply`, so keep it Off unless the pool is redesigned.
-- `Json.Writers.Is_Finite` (`Number'Valid`): legal SPARK, but GNATprove warns `attribute-valid-always-true`,
-  so the function would be assumed True — unsound. Keep Off, as with `Float_Image` (`Img` is imprecise).
-- The remaining Off islands are C bindings (crypto bodies, POSIX/Windows bodies, libcrypto, TLS), float
-  conversions and PostgreSQL `Float_Value` (documented floating-point limitations), and task/heap code
-  (metrics, migrations, queries, JSON builders/iteration). Those are genuine SPARK-boundary cases.
-
-## Review findings to carry forward
-
-- `design/check.py` checks only the package-level `SPARK_Mode` of the units in `[proved]`. A nested
-  `pragma SPARK_Mode (Off)` or a subprogram aspect inside a proved unit is not detected, even though
-  decision 0004 says every check in those units is proved.
-- `SECURITY.md` still says "Sparrow is before 1.0" while the release is 1.0.0.
-
-## Enabling SPARK and contracting the remaining Offs
-
-- A package spec can be SPARK while its private part and body stay Off. `Public_Keys` needs the private part
-  Off because a `System.Address` handle inside a controlled type hits E0003 (freezing point before `Adjust`);
-  `Key_Sets` needs it for `Ada.Containers.Vectors`/`Unbounded_String` (E0005) and heap allocation. Putting the
-  Off on the private part keeps every visible declaration under proof.
-- Contracts on an Off body are **assumptions**, not checks. Check them by hand against the body; a wrong one
-  can make callers unsound. The crypto key builders, `Key_Sets.Add`/`Key_Id_Of`/`Parse_Jwks`, the DB row
-  accessors and the reader's neutral values were each checked against their implementations after adding
-  contracts. `Apply`'s `Post` repeats the `Eligible` decision without calling it — if `Apply` changes, the
-  contract must be updated too.
-- GNATprove generates **coarse** globals for non-SPARK bodies and warns that they can be wrong (access types,
-  `__HEAP`). Write explicit `Global`, `Pre` and `Post` on Off declarations instead of relying on generation.
-- `--proof-warnings=on` is the documented way to look for inconsistent contracts on non-SPARK bodies: it
-  reports unreachable branches in their SPARK callers. On this tree it only reported genuinely dead defensive
-  returns (`Deflate` and `Postgres_Wire.Element`), not inconsistent new contracts.
-- SPARK assumes `'Valid` is always true (and that Off functions terminate). `Postgres_Wire.Float_Value`
-  therefore states "not finite" as the equivalent IEEE exponent-bit test (`Finite_4`/`Finite_8`), while the
-  Off body keeps the `'Valid` check. Both must stay in step.
-- For proofs over bounded numeric parameters, a small constant table can be easier than exponentiation:
-  `Passwords.Parse` uses a 24-entry `Powers` table for `2 ** scrypt_log_n` (verified equal for log N in 1..24).
-- Changing a spec to SPARK can change downstream proofs. After such a change, prove **all** crates again, not
-  just the one edited.
+- Use `gnatprove --clean` before a full run; session files can hide a check that only another prover solved.
+- Use `--limit-line=<file>:<line>` for a single failing check, and `--report=provers` to see which prover
+  actually discharges it.
