@@ -175,21 +175,25 @@ package body Sparrow.Http.Compression with SPARK_Mode is
       return False;
    end Contains_Folded;
 
-   function Eligible (Request : Requests.Request; Response : Responses.Response) return Boolean is
+   function Compressible_Response (Response : Responses.Response) return Boolean is
      (Response.Mode = Responses.Whole
       and then Response.Status in 200 .. 299
       and then Response.Status not in No_Content | Partial_Content
       and then Response.Content.Length >= Minimum_Length
       and then Compressible (Responses.Header (Response, "Content-Type"))
       and then Responses.Header (Response, "Content-Encoding") = ""
-      and then not Contains_Folded (Responses.Header (Response, "Cache-Control"), "no-transform")
+      and then not Contains_Folded (Responses.Header (Response, "Cache-Control"), "no-transform"));
+
+   function Eligible (Request : Requests.Request; Response : Responses.Response) return Boolean is
+     (Compressible_Response (Response)
       and then Accepts_Gzip (Requests.Header (Request, "Accept-Encoding")));
 
    procedure Apply (Request : Requests.Request; Response : in out Responses.Response) with SPARK_Mode => Off is
       Length : constant Natural := Response.Content.Length;
    begin
-      --  The cheap tests first: most responses stop here.
-      if not Eligible (Request, Response) then
+      --  The cheap response tests first: most responses stop here. Vary is added before the client is checked
+      --  so that a plain response is still marked as varying on Accept-Encoding.
+      if not Compressible_Response (Response) then
          return;
       end if;
 
@@ -203,6 +207,10 @@ package body Sparrow.Http.Compression with SPARK_Mode is
             Responses.Set_Header (Response, "Vary", Vary & ", Accept-Encoding");
          end if;
       end;
+      if not Accepts_Gzip (Requests.Header (Request, "Accept-Encoding")) then
+         return;
+      end if;
+
       declare
          Item    : Compressor_Access;
          Last    : Natural;
