@@ -35,6 +35,10 @@ Durable techniques for working on the SPARK proofs. Not a decision record; archi
 
 ## Process
 
+- When extracting a repeated condition into a helper, preserve its position relative to side effects. In
+  `Apply`, `Vary: Accept-Encoding` must be set before the client's `Accept-Encoding` is checked, otherwise
+  plain responses are cacheable as if they were gzip-encoded. Keep the response-only check and the client
+  check separate.
 - Prefer `--steps` over `--timeout` for reproducible results: wall-clock limits change with machine load,
   step limits do not. Keep a generous timeout only as a safety cap, and set the step limit well above the
   largest step count in the proof session files.

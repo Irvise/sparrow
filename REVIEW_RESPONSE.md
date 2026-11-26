@@ -18,7 +18,7 @@ contracts" is callable from SPARK was wrong and has been corrected.
 | `sparrow-http-static.ads` — `Serve_File` | **done.** Declaration is SPARK with `Pre`/`Post`; body remains Off (file I/O, address overlay, heap). |
 | `sparrow-http-static.ads` — `Routes`, `Handle`, `Make`, `Folder` | **done.** `Routes` genuinely cannot be SPARK: E0003 on its controlled/access components, E0005 on heap state, plain `Pre` on a dispatching operation is illegal, and access components of a tagged extension are illegal. It stays Off; the `Pre`/`Post` that gnatprove would ignore were removed. `Max_Age_Of`, added only to support a `Post`, was removed too. |
 | `sparrow-http-requests.ads` — `Json_Body` | **done.** Declaration is SPARK; body stays Off because a return with computed `Document` discriminants is illegal in SPARK (E0007) and a maximum-size document would allocate ~1M nodes. The `Post` was reduced to the one non-redundant property the author suggested. The capacity scan remains a proved SPARK helper. |
-| `sparrow-http-compression.ads` — `Apply` | **done.** Declaration is SPARK with `Global`, `Pre`, `Post`; body stays Off (heap compressor pool, E0019). The original `Post` used `'Old` on a by-copy `in out` parameter and was genuinely rejected once the Off was removed, as the author suspected; it is now just validity. `Apply` now calls the proved `Eligible` instead of duplicating its checks. |
+| `sparrow-http-compression.ads` — `Apply` | **done.** Declaration is SPARK with `Global`, `Pre`, `Post`; body stays Off (heap compressor pool, E0019). The original `Post` used `'Old` on a by-copy `in out` parameter and was genuinely rejected once the Off was removed, as the author suspected; it is now just validity. `Apply` calls the proved `Compressible_Response` and then `Accepts_Gzip`, in that order — see the Vary regression below. |
 
 ## Review points 1–10
 
@@ -38,5 +38,19 @@ contracts" is callable from SPARK was wrong and has been corrected.
 - Computed `Powers` as `[for I in Scrypt_Cost => 2 ** I]`: **tried and reverted.** With 10 s provers, the overflow check on `Block_Size * Power` no longer proves (the symbolic `2 ** Last` gives no concrete bound, even with an assertion). Explicit constants stay.
 - `Separator_Of` index subtype `1 .. 3`: **done**, removing `when others` and an assertion.
 - `Coordinate_Bytes` also naming the Ed25519 seed, `Signature_Bytes` scope, duplicate RSA comment: **open**, cosmetic.
-- `Eligible` duplicating `Apply`'s checks: **done**, `Apply` calls it.
-- Review type "Request changes": agreed; points 1, 2 and 10 are real blockers to merge.
+- `Eligible` duplicating `Apply`'s checks: **done**, but see the regression below: `Apply` calls
+  `Compressible_Response` and `Accepts_Gzip` separately to preserve the order of the `Vary` side effect.
+- Review type "Request changes": agreed; points 1, 2 and 10 were real blockers to merge.
+
+## Follow-up: Vary regression (maintainer comment, 2026-11-25)
+
+The maintainer found a real regression caused by my change: folding the client check into `Eligible` made
+`Apply` test `Accept-Encoding` before adding `Vary: Accept-Encoding`. A client that does not accept gzip then
+got a plain response without `Vary`, so a shared cache could serve it to gzip clients.
+
+**Fixed as suggested:** `Compressible_Response` holds the response-only checks; `Eligible` is that plus
+`Accepts_Gzip`; `Apply` checks `Compressible_Response`, adds `Vary`, then checks `Accepts_Gzip`. This
+restores the original order. `tests/src/http_tests.adb:1262` is the regression test the maintainer cited.
+HTTP proof passes with the new configuration; the test suite cannot be linked in this environment because
+the system's `libpq`, `libssl`, `libcrypto` and `libsqlite3` development libraries are absent, so CI must
+confirm the two previously failing HTTP tests and the ThreadSanitizer job.
